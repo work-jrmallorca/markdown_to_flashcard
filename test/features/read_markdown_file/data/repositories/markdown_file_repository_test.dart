@@ -21,8 +21,9 @@ void main() {
     filePickerResult = FilePickerResult([platformFile]);
   });
 
-  group('GIVEN the user wants to select a Markdown file, ', () {
+  group('getMarkdownFile()', () {
     test(
+        'GIVEN the user selects a Markdown file, '
         "WHEN 'getMarkdownFile()' is called from the repository, "
         "THEN call 'FilePicker.platform.pickFiles()' once, "
         "AND return a 'File'", () async {
@@ -33,6 +34,20 @@ void main() {
 
       verify(() => mock()).called(1);
       expect(result!.path, expected.path);
+    });
+
+    test(
+        'GIVEN the user does not select a Markdown file, '
+        "WHEN 'getMarkdownFile()' is called from the repository, "
+        "THEN call 'FilePicker.platform.pickFiles()' once, "
+        "AND return 'null'", () async {
+      const File? expected = null;
+      when(() => mock()).thenAnswer((_) async => null);
+
+      final File? result = await repository.getMarkdownFile();
+
+      verify(() => mock()).called(1);
+      expect(result, expected);
     });
   });
 }
