@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/bloc/get_markdown_file_state.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/get_markdown_file_state.dart';
 
 void main() {
   test('initial state is correct', () {

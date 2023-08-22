@@ -2,20 +2,22 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/data/data_sources/markdown_file_picker_local_data_source.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/data/repositories/markdown_file_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockPickMarkdownFile extends Mock implements PickMarkdownFile {}
+class MockMarkdownFilePickerLocalDataSource extends Mock
+    implements MarkdownFilePickerLocalDataSource {}
 
 void main() {
   late MarkdownFileRepository repository;
-  late MockPickMarkdownFile mock;
+  late MockMarkdownFilePickerLocalDataSource mock;
   late PlatformFile platformFile;
   late FilePickerResult filePickerResult;
 
   setUp(() {
-    mock = MockPickMarkdownFile();
-    repository = MarkdownFileRepository(pickMarkdownFileAPI: mock);
+    mock = MockMarkdownFilePickerLocalDataSource();
+    repository = MarkdownFileRepository(localDataSource: mock);
 
     platformFile = PlatformFile(path: 'test.md', name: 'test.md', size: 0);
     filePickerResult = FilePickerResult([platformFile]);

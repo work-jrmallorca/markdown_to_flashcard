@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/bloc/get_markdown_file_cubit.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/bloc/get_markdown_file_state.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/data/repositories/markdown_file_repository.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/get_markdown_file_cubit.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/get_markdown_file_state.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockMarkdownFileRepository extends Mock
