@@ -17,12 +17,14 @@ class GetMarkdownFileCubit extends Cubit<GetMarkdownFileState> {
     try {
       final File? file = await repository.getMarkdownFile();
 
-      emit(
-        state.copyWith(
-          status: GetMarkdownFileStatus.success,
-          file: file,
-        ),
-      );
+      file != null
+          ? emit(
+              state.copyWith(
+                status: GetMarkdownFileStatus.success,
+                file: file,
+              ),
+            )
+          : emit(state.copyWith(status: GetMarkdownFileStatus.cancelled));
     } on Exception catch (exception) {
       emit(
         state.copyWith(

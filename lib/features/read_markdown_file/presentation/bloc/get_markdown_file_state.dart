@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 
-enum GetMarkdownFileStatus { initial, loading, success, failure }
+enum GetMarkdownFileStatus { initial, loading, success, failure, cancelled }
 
 class GetMarkdownFileState extends Equatable {
   final GetMarkdownFileStatus status;
