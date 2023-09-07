@@ -35,13 +35,13 @@ class ConvertMarkdownNoteToDartNoteUseCase {
     return regex.firstMatch(fileContents)!.group(1)!;
   }
 
-  List<String> _getTags(String fileContents) {
+  Set<String> _getTags(String fileContents) {
     RegExp regex = RegExp(r'tags: \[(.*)\]');
     String regexResult = regex.firstMatch(fileContents)!.group(1)!;
-    List<String> trimmedTags =
-        regexResult.split(',').map((e) => e.trim()).toList();
+    Set<String> trimmedTags =
+        regexResult.split(',').map((e) => e.trim()).toSet();
 
-    return regexResult.isEmpty ? [] : trimmedTags;
+    return regexResult.isEmpty ? {} : trimmedTags;
   }
 
   List<QuestionAnswerPair> _getQuestionAnswerPairs(String fileContents) {

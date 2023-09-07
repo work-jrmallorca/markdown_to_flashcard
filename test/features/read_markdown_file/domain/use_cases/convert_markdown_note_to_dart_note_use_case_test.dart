@@ -68,7 +68,7 @@ void main() {
       Note expected = Note(
         fileName: file.path.split('/').last,
         deck: 'test deck',
-        tags: const [],
+        tags: const {},
         questionAnswerPairs: const [],
       );
       when(() => mock.getMarkdownFile()).thenAnswer((_) async => file);
@@ -89,7 +89,7 @@ void main() {
       Note expected = Note(
         fileName: file.path.split('/').last,
         deck: 'test deck',
-        tags: const ['test-tag1'],
+        tags: const {'test-tag1'},
         questionAnswerPairs: const [],
       );
       when(() => mock.getMarkdownFile()).thenAnswer((_) async => file);
@@ -109,7 +109,7 @@ void main() {
       Note expected = Note(
         fileName: file.path.split('/').last,
         deck: 'test deck',
-        tags: const ['test-tag1', 'test-tag2', 'test-tag3'],
+        tags: const {'test-tag1', 'test-tag2', 'test-tag3'},
         questionAnswerPairs: const [],
       );
       when(() => mock.getMarkdownFile()).thenAnswer((_) async => file);
@@ -129,7 +129,7 @@ void main() {
       Note expected = Note(
         fileName: file.path.split('/').last,
         deck: 'test deck',
-        tags: const ['test-tag1', 'test-tag2', 'test-tag3'],
+        tags: const {'test-tag1', 'test-tag2', 'test-tag3'},
         questionAnswerPairs: const [
           QuestionAnswerPair(
             question: 'Test question 1',
@@ -155,7 +155,7 @@ void main() {
       Note expected = Note(
         fileName: file.path.split('/').last,
         deck: 'test deck',
-        tags: const ['test-tag1', 'test-tag2', 'test-tag3'],
+        tags: const {'test-tag1', 'test-tag2', 'test-tag3'},
         questionAnswerPairs: const [
           QuestionAnswerPair(
             question: 'Test question 1',
