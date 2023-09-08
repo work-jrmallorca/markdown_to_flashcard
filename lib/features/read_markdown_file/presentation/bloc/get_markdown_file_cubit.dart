@@ -1,27 +1,26 @@
-import 'dart:io';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/data/repositories/markdown_file_repository.dart';
 
+import '../../domain/entities/note.dart';
+import '../../domain/use_cases/convert_markdown_note_to_dart_note_use_case.dart';
 import 'get_markdown_file_state.dart';
 
 class GetMarkdownFileCubit extends Cubit<GetMarkdownFileState> {
-  final MarkdownFileRepository repository;
+  final ConvertMarkdownNoteToDartNoteUseCase convertMarkdownNoteToDartNote;
 
-  GetMarkdownFileCubit({required this.repository})
+  GetMarkdownFileCubit({required this.convertMarkdownNoteToDartNote})
       : super(const GetMarkdownFileState());
 
   Future<void> getMarkdownFile() async {
     emit(state.copyWith(status: GetMarkdownFileStatus.loading));
 
     try {
-      final File? file = await repository.getMarkdownFile();
+      final Note? note = await convertMarkdownNoteToDartNote();
 
-      file != null
+      note != null
           ? emit(
               state.copyWith(
-                status: GetMarkdownFileStatus.success,
-                file: file,
+                status: GetMarkdownFileStatus.retrieved,
+                note: note,
               ),
             )
           : emit(state.copyWith(status: GetMarkdownFileStatus.cancelled));

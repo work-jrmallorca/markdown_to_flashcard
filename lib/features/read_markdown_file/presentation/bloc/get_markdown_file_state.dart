@@ -1,32 +1,40 @@
-import 'dart:io';
-
 import 'package:equatable/equatable.dart';
 
-enum GetMarkdownFileStatus { initial, loading, success, failure, cancelled }
+import '../../domain/entities/note.dart';
+
+enum GetMarkdownFileStatus {
+  initial,
+  loading,
+  retrieved,
+  converted,
+  addedToAnkidroid,
+  failure,
+  cancelled,
+}
 
 class GetMarkdownFileState extends Equatable {
   final GetMarkdownFileStatus status;
-  final File? file;
+  final Note? note;
   final Exception? exception;
 
   const GetMarkdownFileState({
     this.status = GetMarkdownFileStatus.initial,
-    this.file,
+    this.note,
     this.exception,
   });
 
   GetMarkdownFileState copyWith({
     GetMarkdownFileStatus? status,
-    File? file,
+    Note? note,
     Exception? exception,
   }) {
     return GetMarkdownFileState(
       status: status ?? this.status,
-      file: file ?? this.file,
+      note: note ?? this.note,
       exception: exception ?? this.exception,
     );
   }
 
   @override
-  List<Object?> get props => [status, file, exception];
+  List<Object?> get props => [status, note, exception];
 }

@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/domain/entities/note.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/get_markdown_file_state.dart';
 
 void main() {
@@ -12,19 +11,24 @@ void main() {
   test('copyWith works', () {
     const GetMarkdownFileState initialState = GetMarkdownFileState();
     final Exception exception = Exception('Test');
-    final File file = File('test.md');
+    const Note note = Note(
+      fileName: 'Test file name',
+      deck: 'Test deck name',
+      tags: {},
+      questionAnswerPairs: [],
+    );
 
     final state = initialState.copyWith(
-      status: GetMarkdownFileStatus.success,
-      file: file,
+      status: GetMarkdownFileStatus.retrieved,
+      note: note,
       exception: exception,
     );
 
     expect(
       state,
       GetMarkdownFileState(
-        status: GetMarkdownFileStatus.success,
-        file: file,
+        status: GetMarkdownFileStatus.retrieved,
+        note: note,
         exception: exception,
       ),
     );

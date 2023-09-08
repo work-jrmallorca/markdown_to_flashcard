@@ -1,26 +1,32 @@
-import 'dart:io';
-
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/data/repositories/markdown_file_repository.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/domain/entities/note.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/convert_markdown_note_to_dart_note_use_case.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/get_markdown_file_cubit.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/get_markdown_file_state.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockMarkdownFileRepository extends Mock
-    implements MarkdownFileRepository {}
+class MockConvertMarkdownNoteToDartNoteUseCase extends Mock
+    implements ConvertMarkdownNoteToDartNoteUseCase {}
 
 void main() {
-  late MockMarkdownFileRepository mock;
+  const Note emptyNote = Note(
+    fileName: 'Test file name',
+    deck: 'Test deck name',
+    tags: {},
+    questionAnswerPairs: [],
+  );
+
+  late MockConvertMarkdownNoteToDartNoteUseCase mock;
   late GetMarkdownFileCubit cubit;
 
   setUp(() {
-    mock = MockMarkdownFileRepository();
-    cubit = GetMarkdownFileCubit(repository: mock);
+    mock = MockConvertMarkdownNoteToDartNoteUseCase();
+    cubit = GetMarkdownFileCubit(convertMarkdownNoteToDartNote: mock);
   });
 
   group('getMarkdownFile()', () {
-    final File expected = File('test.md');
+    const Note expected = emptyNote;
     final Exception exception = Exception('Failed to get Markdown file.');
 
     blocTest<GetMarkdownFileCubit, GetMarkdownFileState>(
@@ -28,16 +34,15 @@ void main() {
       "WHEN 'getMarkdownFile()' is called from the cubit, "
       "THEN call 'getMarkdownFile()' from the repository, "
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.success]',
-      setUp: () =>
-          when(() => mock.getMarkdownFile()).thenAnswer((_) async => expected),
+      setUp: () => when(() => mock()).thenAnswer((_) async => expected),
       build: () => cubit,
       act: (cubit) => cubit.getMarkdownFile(),
-      verify: (_) async => verify(() => mock.getMarkdownFile()).called(1),
+      verify: (_) async => verify(() => mock()).called(1),
       expect: () => <GetMarkdownFileState>[
         const GetMarkdownFileState(status: GetMarkdownFileStatus.loading),
-        GetMarkdownFileState(
-          status: GetMarkdownFileStatus.success,
-          file: expected,
+        const GetMarkdownFileState(
+          status: GetMarkdownFileStatus.retrieved,
+          note: expected,
         ),
       ],
     );
@@ -47,10 +52,10 @@ void main() {
       "WHEN 'getMarkdownFile()' is called from the cubit, "
       "THEN call 'getMarkdownFile()' from the repository, "
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.failure]',
-      setUp: () => when(() => mock.getMarkdownFile()).thenThrow(exception),
+      setUp: () => when(() => mock()).thenThrow(exception),
       build: () => cubit,
       act: (cubit) => cubit.getMarkdownFile(),
-      verify: (_) async => verify(() => mock.getMarkdownFile()).called(1),
+      verify: (_) async => verify(() => mock()).called(1),
       expect: () => <GetMarkdownFileState>[
         const GetMarkdownFileState(status: GetMarkdownFileStatus.loading),
         GetMarkdownFileState(
@@ -65,11 +70,10 @@ void main() {
       "WHEN 'getMarkdownFile()' is called from the cubit, "
       "THEN call 'getMarkdownFile()' from the repository, "
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.cancelled]',
-      setUp: () =>
-          when(() => mock.getMarkdownFile()).thenAnswer((_) async => null),
+      setUp: () => when(() => mock()).thenAnswer((_) async => null),
       build: () => cubit,
       act: (cubit) => cubit.getMarkdownFile(),
-      verify: (_) async => verify(() => mock.getMarkdownFile()).called(1),
+      verify: (_) async => verify(() => mock()).called(1),
       expect: () => <GetMarkdownFileState>[
         const GetMarkdownFileState(status: GetMarkdownFileStatus.loading),
         const GetMarkdownFileState(status: GetMarkdownFileStatus.cancelled),

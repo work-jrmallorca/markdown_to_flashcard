@@ -26,9 +26,9 @@ class GetMarkdownFileScreen extends StatelessWidget {
     return BlocConsumer<GetMarkdownFileCubit, GetMarkdownFileState>(
       listener: (context, state) {
         switch (state.status) {
-          case GetMarkdownFileStatus.success:
+          case GetMarkdownFileStatus.retrieved:
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('File loaded: ${state.file?.path}')),
+              SnackBar(content: Text('File loaded: ${state.note?.fileName}')),
             );
             break;
           case GetMarkdownFileStatus.failure:
