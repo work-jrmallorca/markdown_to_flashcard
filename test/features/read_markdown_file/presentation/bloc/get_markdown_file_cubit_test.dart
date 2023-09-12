@@ -1,6 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/entities/note.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/add_question_answer_pairs_in_note_to_ankidroid_use_case.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/convert_markdown_note_to_dart_note_use_case.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/get_markdown_file_cubit.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/get_markdown_file_state.dart';
@@ -9,24 +10,33 @@ import 'package:mocktail/mocktail.dart';
 class MockConvertMarkdownNoteToDartNoteUseCase extends Mock
     implements ConvertMarkdownNoteToDartNoteUseCase {}
 
+class MockAddQuestionAnswerPairsInNoteToAnkidroidUseCase extends Mock
+    implements AddQuestionAnswerPairsInNoteToAnkidroidUseCase {}
+
 void main() {
   const Note emptyNote = Note(
     fileName: 'Test file name',
     deck: 'Test deck name',
-    tags: {},
+    tags: [],
     questionAnswerPairs: [],
   );
 
-  late MockConvertMarkdownNoteToDartNoteUseCase mock;
+  late MockConvertMarkdownNoteToDartNoteUseCase mockConvertUseCase;
+  late MockAddQuestionAnswerPairsInNoteToAnkidroidUseCase mockAddUseCase;
   late GetMarkdownFileCubit cubit;
 
   setUp(() {
-    mock = MockConvertMarkdownNoteToDartNoteUseCase();
-    cubit = GetMarkdownFileCubit(convertMarkdownNoteToDartNote: mock);
+    mockConvertUseCase = MockConvertMarkdownNoteToDartNoteUseCase();
+    mockAddUseCase = MockAddQuestionAnswerPairsInNoteToAnkidroidUseCase();
+    cubit = GetMarkdownFileCubit(
+      convertMarkdownNoteToDartNote: mockConvertUseCase,
+      addQuestionAnswerPairsInNoteToAnkidroid: mockAddUseCase,
+    );
   });
 
   group('getMarkdownFile()', () {
-    const Note expected = emptyNote;
+    const Note expectedNote = emptyNote;
+    const List<int> expectedNoteIds = [];
     final Exception exception = Exception('Failed to get Markdown file.');
 
     blocTest<GetMarkdownFileCubit, GetMarkdownFileState>(
@@ -34,15 +44,19 @@ void main() {
       "WHEN 'getMarkdownFile()' is called from the cubit, "
       "THEN call 'getMarkdownFile()' from the repository, "
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.success]',
-      setUp: () => when(() => mock()).thenAnswer((_) async => expected),
+      setUp: () {
+        when(() => mockConvertUseCase()).thenAnswer((_) async => expectedNote);
+        when(() => mockAddUseCase(expectedNote))
+            .thenAnswer((_) async => expectedNoteIds);
+      },
       build: () => cubit,
       act: (cubit) => cubit.getMarkdownFile(),
-      verify: (_) async => verify(() => mock()).called(1),
+      verify: (_) async => verify(() => mockConvertUseCase()).called(1),
       expect: () => <GetMarkdownFileState>[
         const GetMarkdownFileState(status: GetMarkdownFileStatus.loading),
         const GetMarkdownFileState(
           status: GetMarkdownFileStatus.retrieved,
-          note: expected,
+          note: expectedNote,
         ),
       ],
     );
@@ -52,10 +66,10 @@ void main() {
       "WHEN 'getMarkdownFile()' is called from the cubit, "
       "THEN call 'getMarkdownFile()' from the repository, "
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.failure]',
-      setUp: () => when(() => mock()).thenThrow(exception),
+      setUp: () => when(() => mockConvertUseCase()).thenThrow(exception),
       build: () => cubit,
       act: (cubit) => cubit.getMarkdownFile(),
-      verify: (_) async => verify(() => mock()).called(1),
+      verify: (_) async => verify(() => mockConvertUseCase()).called(1),
       expect: () => <GetMarkdownFileState>[
         const GetMarkdownFileState(status: GetMarkdownFileStatus.loading),
         GetMarkdownFileState(
@@ -70,10 +84,11 @@ void main() {
       "WHEN 'getMarkdownFile()' is called from the cubit, "
       "THEN call 'getMarkdownFile()' from the repository, "
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.cancelled]',
-      setUp: () => when(() => mock()).thenAnswer((_) async => null),
+      setUp: () =>
+          when(() => mockConvertUseCase()).thenAnswer((_) async => null),
       build: () => cubit,
       act: (cubit) => cubit.getMarkdownFile(),
-      verify: (_) async => verify(() => mock()).called(1),
+      verify: (_) async => verify(() => mockConvertUseCase()).called(1),
       expect: () => <GetMarkdownFileState>[
         const GetMarkdownFileState(status: GetMarkdownFileStatus.loading),
         const GetMarkdownFileState(status: GetMarkdownFileStatus.cancelled),

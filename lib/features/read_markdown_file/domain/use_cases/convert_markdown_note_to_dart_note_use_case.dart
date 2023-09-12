@@ -40,15 +40,15 @@ class ConvertMarkdownNoteToDartNoteUseCase {
         ));
   }
 
-  Set<String> _getTags(String fileContents) {
+  List<String> _getTags(String fileContents) {
     RegExp regex = RegExp(r'tags: \[(.*)\]');
     String? regexResult = regex.firstMatch(fileContents)?.group(1)!;
 
     if (regexResult != null) {
-      Set<String> trimmedTags =
-          regexResult.split(',').map((e) => e.trim()).toSet();
+      List<String> trimmedTags =
+          regexResult.split(',').map((e) => e.trim()).toList();
 
-      return regexResult.isEmpty ? {} : trimmedTags;
+      return regexResult.isEmpty ? [] : trimmedTags;
     } else {
       throw ConversionException(
         message:

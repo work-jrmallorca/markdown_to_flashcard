@@ -13,14 +13,14 @@ void main() {
   const Note emptyNote = Note(
     fileName: 'Test file name',
     deck: 'Test deck name',
-    tags: {},
+    tags: [],
     questionAnswerPairs: [],
   );
 
   const Note noteWithOneQAPair = Note(
     fileName: 'Test file name',
     deck: 'Test deck name',
-    tags: {},
+    tags: [],
     questionAnswerPairs: [
       QuestionAnswerPair(question: 'Test question', answer: 'Test answer')
     ],
@@ -29,7 +29,7 @@ void main() {
   const Note noteWithMultipleQAPairs = Note(
     fileName: 'Test file name',
     deck: 'Test deck name',
-    tags: {},
+    tags: [],
     questionAnswerPairs: [
       QuestionAnswerPair(question: 'Test question 1', answer: 'Test answer 1'),
       QuestionAnswerPair(question: 'Test question 2', answer: 'Test answer 2'),

@@ -14,7 +14,7 @@ void main() {
     const Note note = Note(
       fileName: 'Test file name',
       deck: 'Test deck name',
-      tags: {},
+      tags: [],
       questionAnswerPairs: [],
     );
 

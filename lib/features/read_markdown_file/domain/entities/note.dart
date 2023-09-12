@@ -5,7 +5,7 @@ import 'question_answer_pair.dart';
 class Note extends Equatable {
   final String fileName;
   final String deck;
-  final Set<String> tags;
+  final List<String> tags;
   final List<QuestionAnswerPair> questionAnswerPairs;
 
   const Note({

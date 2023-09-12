@@ -115,7 +115,7 @@ void main() {
       Note expected = Note(
         fileName: file.path.split('/').last,
         deck: 'test deck',
-        tags: const {'test-tag1', 'test-tag2', 'test-tag3'},
+        tags: const ['test-tag1', 'test-tag2', 'test-tag3'],
         questionAnswerPairs: const [
           QuestionAnswerPair(
             question: 'Test question 1',
@@ -141,7 +141,7 @@ void main() {
       Note expected = Note(
         fileName: file.path.split('/').last,
         deck: 'test deck',
-        tags: const {'test-tag1', 'test-tag2', 'test-tag3'},
+        tags: const ['test-tag1', 'test-tag2', 'test-tag3'],
         questionAnswerPairs: const [
           QuestionAnswerPair(
             question: 'Test question 1',
