@@ -13,4 +13,7 @@ internal object Model {
 
     fun getAnswerFormat(context: Context): Array<String> =
         Utils.getAsset(context, "assets/model_formats/answer.html")
+
+    fun getCSS(context: Context): String =
+        Utils.getAsset(context, "assets/model_formats/style.css").joinToString(" ")
 }

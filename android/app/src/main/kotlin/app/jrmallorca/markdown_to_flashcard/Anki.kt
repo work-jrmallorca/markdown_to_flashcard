@@ -38,7 +38,9 @@ class Anki(private val context: Context) {
         return api.addNewCustomModel(
             Model.NAME, Model.FIELDS, Model.CARD_NAMES,
             Model.getQuestionFormat(context),
-            Model.getAnswerFormat(context), null, null, null
+            Model.getAnswerFormat(context),
+            Model.getCSS(context),
+            null, null
         )
     }
 
