@@ -15,6 +15,19 @@ class Note extends Equatable {
     required this.questionAnswerPairs,
   });
 
+  Note copyWith({
+    fileName,
+    deck,
+    tags,
+    questionAnswerPairs,
+  }) =>
+      Note(
+        fileName: fileName ?? this.fileName,
+        deck: deck ?? this.deck,
+        tags: tags ?? this.tags,
+        questionAnswerPairs: questionAnswerPairs ?? this.questionAnswerPairs,
+      );
+
   @override
   List<Object?> get props => [
         fileName,
