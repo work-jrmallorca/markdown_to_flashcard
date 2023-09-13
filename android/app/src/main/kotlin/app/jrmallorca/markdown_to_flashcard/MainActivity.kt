@@ -1,4 +1,4 @@
-package com.example.markdown_to_flashcard
+package app.jrmallorca.markdown_to_flashcard
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
