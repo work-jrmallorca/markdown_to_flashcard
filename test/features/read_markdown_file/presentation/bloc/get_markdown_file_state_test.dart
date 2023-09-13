@@ -19,7 +19,7 @@ void main() {
     );
 
     final state = initialState.copyWith(
-      status: GetMarkdownFileStatus.retrieved,
+      status: GetMarkdownFileStatus.success,
       note: note,
       exception: exception,
     );
@@ -27,7 +27,7 @@ void main() {
     expect(
       state,
       GetMarkdownFileState(
-        status: GetMarkdownFileStatus.retrieved,
+        status: GetMarkdownFileStatus.success,
         note: note,
         exception: exception,
       ),

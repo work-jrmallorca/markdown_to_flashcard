@@ -5,9 +5,7 @@ import '../../domain/entities/note.dart';
 enum GetMarkdownFileStatus {
   initial,
   loading,
-  retrieved,
-  converted,
-  addedToAnkidroid,
+  success,
   failure,
   cancelled,
 }

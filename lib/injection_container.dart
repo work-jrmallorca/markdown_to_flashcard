@@ -4,6 +4,7 @@ import 'package:markdown_to_flashcard/features/read_markdown_file/data/data_sour
 import 'package:markdown_to_flashcard/features/read_markdown_file/data/repositories/markdown_file_repository.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/add_question_answer_pairs_in_note_to_ankidroid_use_case.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/convert_markdown_note_to_dart_note_use_case.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/convert_markdown_to_html_use_case.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/request_ankidroid_permission_use_case.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/get_markdown_file_cubit.dart';
 
@@ -14,7 +15,14 @@ void init() {
   sl.registerFactory(
     () => GetMarkdownFileCubit(
       convertMarkdownNoteToDartNote: sl(),
+      convertMarkdownToHTMLUseCase: sl(),
       addQuestionAnswerPairsInNoteToAnkidroid: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => RequestAnkidroidPermissionUseCase(
+      methodChannel: sl(),
     ),
   );
 
@@ -25,13 +33,11 @@ void init() {
   );
 
   sl.registerLazySingleton(
-    () => AddQuestionAnswerPairsInNoteToAnkidroidUseCase(
-      methodChannel: sl(),
-    ),
+    () => ConvertMarkdownToHTMLUseCase(),
   );
 
   sl.registerLazySingleton(
-    () => RequestAnkidroidPermissionUseCase(
+    () => AddQuestionAnswerPairsInNoteToAnkidroidUseCase(
       methodChannel: sl(),
     ),
   );
