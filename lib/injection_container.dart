@@ -4,6 +4,7 @@ import 'package:markdown_to_flashcard/features/read_markdown_file/data/data_sour
 import 'package:markdown_to_flashcard/features/read_markdown_file/data/repositories/markdown_file_repository.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/add_question_answer_pairs_in_note_to_ankidroid_use_case.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/convert_markdown_note_to_dart_note_use_case.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/request_ankidroid_permission_use_case.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/get_markdown_file_cubit.dart';
 
 final sl = GetIt.instance;
@@ -30,6 +31,12 @@ void init() {
   );
 
   sl.registerLazySingleton(
+    () => RequestAnkidroidPermissionUseCase(
+      methodChannel: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
     () => MarkdownFileRepository(
       localDataSource: sl(),
     ),
@@ -39,11 +46,10 @@ void init() {
     () => MarkdownFilePickerLocalDataSource(),
   );
 
+  // Core
   sl.registerLazySingleton(
     () => const MethodChannel('app.jrmallorca.markdown_to_flashcard/ankidroid'),
   );
-
-  // Core
 
   // External
 }
