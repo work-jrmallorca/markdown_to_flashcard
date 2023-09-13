@@ -1,0 +1,16 @@
+{{Front}}
+<p class="tags">{{Tags}}</p>
+
+<script>
+    var tagEl = document.querySelector('.tags');
+    var tags = tagEl.innerHTML.split(' ');
+    var html = '';
+    tags.forEach(function(tag) {
+        if (tag) {
+            var newTag = '<span class="tag">' + tag + '</span>';
+            html += newTag;
+            tagEl.innerHTML = html;
+        }
+    });
+
+</script>
