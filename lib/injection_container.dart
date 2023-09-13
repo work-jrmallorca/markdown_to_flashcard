@@ -13,7 +13,7 @@ final sl = GetIt.instance;
 void init() {
   // Features
   sl.registerFactory(
-    () => GetMarkdownFileCubit(
+    () => MarkdownToFlashcardCubit(
       convertMarkdownNoteToDartNote: sl(),
       convertMarkdownToHTMLUseCase: sl(),
       addQuestionAnswerPairsInNoteToAnkidroid: sl(),

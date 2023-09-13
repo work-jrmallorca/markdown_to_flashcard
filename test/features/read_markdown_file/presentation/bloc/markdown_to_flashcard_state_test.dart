@@ -1,15 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/entities/note.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/get_markdown_file_state.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/markdown_to_flashcard_state.dart';
 
 void main() {
   test('initial state is correct', () {
-    const initialState = GetMarkdownFileState();
+    const initialState = MarkdownToFlashcardState();
     expect(initialState.status, GetMarkdownFileStatus.initial);
   });
 
   test('copyWith works', () {
-    const GetMarkdownFileState initialState = GetMarkdownFileState();
+    const MarkdownToFlashcardState initialState = MarkdownToFlashcardState();
     final Exception exception = Exception('Test');
     const Note note = Note(
       fileName: 'Test file name',
@@ -26,7 +26,7 @@ void main() {
 
     expect(
       state,
-      GetMarkdownFileState(
+      MarkdownToFlashcardState(
         status: GetMarkdownFileStatus.success,
         note: note,
         exception: exception,

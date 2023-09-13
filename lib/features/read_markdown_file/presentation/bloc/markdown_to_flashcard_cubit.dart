@@ -4,19 +4,19 @@ import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cas
 
 import '../../domain/entities/note.dart';
 import '../../domain/use_cases/convert_markdown_note_to_dart_note_use_case.dart';
-import 'get_markdown_file_state.dart';
+import 'markdown_to_flashcard_state.dart';
 
-class GetMarkdownFileCubit extends Cubit<GetMarkdownFileState> {
+class MarkdownToFlashcardCubit extends Cubit<MarkdownToFlashcardState> {
   final ConvertMarkdownNoteToDartNoteUseCase convertMarkdownNoteToDartNote;
   final ConvertMarkdownToHTMLUseCase convertMarkdownToHTMLUseCase;
   final AddQuestionAnswerPairsInNoteToAnkidroidUseCase
       addQuestionAnswerPairsInNoteToAnkidroid;
 
-  GetMarkdownFileCubit({
+  MarkdownToFlashcardCubit({
     required this.convertMarkdownNoteToDartNote,
     required this.convertMarkdownToHTMLUseCase,
     required this.addQuestionAnswerPairsInNoteToAnkidroid,
-  }) : super(const GetMarkdownFileState());
+  }) : super(const MarkdownToFlashcardState());
 
   Future<void> getMarkdownFile() async {
     emit(state.copyWith(status: GetMarkdownFileStatus.loading));

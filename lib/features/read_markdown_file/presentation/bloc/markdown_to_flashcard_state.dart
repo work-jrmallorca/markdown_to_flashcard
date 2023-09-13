@@ -10,23 +10,23 @@ enum GetMarkdownFileStatus {
   cancelled,
 }
 
-class GetMarkdownFileState extends Equatable {
+class MarkdownToFlashcardState extends Equatable {
   final GetMarkdownFileStatus status;
   final Note? note;
   final Exception? exception;
 
-  const GetMarkdownFileState({
+  const MarkdownToFlashcardState({
     this.status = GetMarkdownFileStatus.initial,
     this.note,
     this.exception,
   });
 
-  GetMarkdownFileState copyWith({
+  MarkdownToFlashcardState copyWith({
     GetMarkdownFileStatus? status,
     Note? note,
     Exception? exception,
   }) {
-    return GetMarkdownFileState(
+    return MarkdownToFlashcardState(
       status: status ?? this.status,
       note: note ?? this.note,
       exception: exception ?? this.exception,

@@ -4,8 +4,8 @@ import 'package:markdown_to_flashcard/features/read_markdown_file/domain/entitie
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/add_question_answer_pairs_in_note_to_ankidroid_use_case.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/convert_markdown_note_to_dart_note_use_case.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/convert_markdown_to_html_use_case.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/get_markdown_file_cubit.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/get_markdown_file_state.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/markdown_to_flashcard_cubit.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/markdown_to_flashcard_state.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockConvertMarkdownNoteToDartNoteUseCase extends Mock
@@ -28,13 +28,13 @@ void main() {
   late MockConvertMarkdownNoteToDartNoteUseCase mockConvertFileToDartUseCase;
   late MockConvertMarkdownToHTMLUseCase mockConvertMarkdownToHTMLUseCase;
   late MockAddQuestionAnswerPairsInNoteToAnkidroidUseCase mockAddUseCase;
-  late GetMarkdownFileCubit cubit;
+  late MarkdownToFlashcardCubit cubit;
 
   setUp(() {
     mockConvertFileToDartUseCase = MockConvertMarkdownNoteToDartNoteUseCase();
     mockConvertMarkdownToHTMLUseCase = MockConvertMarkdownToHTMLUseCase();
     mockAddUseCase = MockAddQuestionAnswerPairsInNoteToAnkidroidUseCase();
-    cubit = GetMarkdownFileCubit(
+    cubit = MarkdownToFlashcardCubit(
       convertMarkdownNoteToDartNote: mockConvertFileToDartUseCase,
       convertMarkdownToHTMLUseCase: mockConvertMarkdownToHTMLUseCase,
       addQuestionAnswerPairsInNoteToAnkidroid: mockAddUseCase,
@@ -46,7 +46,7 @@ void main() {
     const List<int> expectedNoteIds = [];
     final Exception exception = Exception('Failed to get Markdown file.');
 
-    blocTest<GetMarkdownFileCubit, GetMarkdownFileState>(
+    blocTest<MarkdownToFlashcardCubit, MarkdownToFlashcardState>(
       'GIVEN the user successfully selects a Markdown file, '
       "WHEN 'getMarkdownFile()' is called from the cubit, "
       'THEN call all usecases, '
@@ -66,16 +66,16 @@ void main() {
         verify(() => mockConvertMarkdownToHTMLUseCase(expectedNote)).called(1);
         verify(() => mockAddUseCase(expectedNote)).called(1);
       },
-      expect: () => <GetMarkdownFileState>[
-        const GetMarkdownFileState(status: GetMarkdownFileStatus.loading),
-        const GetMarkdownFileState(
+      expect: () => <MarkdownToFlashcardState>[
+        const MarkdownToFlashcardState(status: GetMarkdownFileStatus.loading),
+        const MarkdownToFlashcardState(
           status: GetMarkdownFileStatus.success,
           note: expectedNote,
         ),
       ],
     );
 
-    blocTest<GetMarkdownFileCubit, GetMarkdownFileState>(
+    blocTest<MarkdownToFlashcardCubit, MarkdownToFlashcardState>(
       'GIVEN an exception occurs when user selects a file, '
       "WHEN 'getMarkdownFile()' is called from the cubit, "
       'THEN throw exception when converting file to PODO, '
@@ -86,16 +86,16 @@ void main() {
       act: (cubit) => cubit.getMarkdownFile(),
       verify: (_) async =>
           verify(() => mockConvertFileToDartUseCase()).called(1),
-      expect: () => <GetMarkdownFileState>[
-        const GetMarkdownFileState(status: GetMarkdownFileStatus.loading),
-        GetMarkdownFileState(
+      expect: () => <MarkdownToFlashcardState>[
+        const MarkdownToFlashcardState(status: GetMarkdownFileStatus.loading),
+        MarkdownToFlashcardState(
           status: GetMarkdownFileStatus.failure,
           exception: exception,
         ),
       ],
     );
 
-    blocTest<GetMarkdownFileCubit, GetMarkdownFileState>(
+    blocTest<MarkdownToFlashcardCubit, MarkdownToFlashcardState>(
       'GIVEN an exception occurs when markdown is being converted to HTML, '
       "WHEN 'getMarkdownFile()' is called from the cubit, "
       'THEN throw exception when converting markdown to HTML, '
@@ -112,16 +112,16 @@ void main() {
         verify(() => mockConvertFileToDartUseCase()).called(1);
         verify(() => mockConvertMarkdownToHTMLUseCase(expectedNote)).called(1);
       },
-      expect: () => <GetMarkdownFileState>[
-        const GetMarkdownFileState(status: GetMarkdownFileStatus.loading),
-        GetMarkdownFileState(
+      expect: () => <MarkdownToFlashcardState>[
+        const MarkdownToFlashcardState(status: GetMarkdownFileStatus.loading),
+        MarkdownToFlashcardState(
           status: GetMarkdownFileStatus.failure,
           exception: exception,
         ),
       ],
     );
 
-    blocTest<GetMarkdownFileCubit, GetMarkdownFileState>(
+    blocTest<MarkdownToFlashcardCubit, MarkdownToFlashcardState>(
       'GIVEN an exception occurs when note is being added to Ankidroid, '
       "WHEN 'getMarkdownFile()' is called from the cubit, "
       'THEN throw exception when adding note to Ankidroid, '
@@ -140,16 +140,16 @@ void main() {
         verify(() => mockConvertMarkdownToHTMLUseCase(expectedNote)).called(1);
         verify(() => mockAddUseCase(expectedNote)).called(1);
       },
-      expect: () => <GetMarkdownFileState>[
-        const GetMarkdownFileState(status: GetMarkdownFileStatus.loading),
-        GetMarkdownFileState(
+      expect: () => <MarkdownToFlashcardState>[
+        const MarkdownToFlashcardState(status: GetMarkdownFileStatus.loading),
+        MarkdownToFlashcardState(
           status: GetMarkdownFileStatus.failure,
           exception: exception,
         ),
       ],
     );
 
-    blocTest<GetMarkdownFileCubit, GetMarkdownFileState>(
+    blocTest<MarkdownToFlashcardCubit, MarkdownToFlashcardState>(
       'GIVEN user cancels selecting a file, '
       "WHEN 'getMarkdownFile()' is called from the cubit, "
       "THEN call 'getMarkdownFile()' from the repository, "
@@ -160,9 +160,9 @@ void main() {
       act: (cubit) => cubit.getMarkdownFile(),
       verify: (_) async =>
           verify(() => mockConvertFileToDartUseCase()).called(1),
-      expect: () => <GetMarkdownFileState>[
-        const GetMarkdownFileState(status: GetMarkdownFileStatus.loading),
-        const GetMarkdownFileState(status: GetMarkdownFileStatus.cancelled),
+      expect: () => <MarkdownToFlashcardState>[
+        const MarkdownToFlashcardState(status: GetMarkdownFileStatus.loading),
+        const MarkdownToFlashcardState(status: GetMarkdownFileStatus.cancelled),
       ],
     );
   });

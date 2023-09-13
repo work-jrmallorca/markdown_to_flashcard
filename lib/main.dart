@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => di.sl<GetMarkdownFileCubit>(),
+      create: (_) => di.sl<MarkdownToFlashcardCubit>(),
       child: const MaterialApp(
         title: 'Markdown to Flashcards',
         home: GetMarkdownFileScreen(),
