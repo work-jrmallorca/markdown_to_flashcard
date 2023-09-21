@@ -40,11 +40,6 @@ class GetMarkdownFileScreen extends StatelessWidget {
     return BlocConsumer<MarkdownToFlashcardCubit, MarkdownToFlashcardState>(
       listener: (context, state) {
         switch (state.status) {
-          case GetMarkdownFileStatus.success:
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('File loaded: ${state.note?.fileName}')),
-            );
-            break;
           case GetMarkdownFileStatus.failure:
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('${state.exception}')),
@@ -57,8 +52,6 @@ class GetMarkdownFileScreen extends StatelessWidget {
             break;
           default:
         }
-        if (state.status == GetMarkdownFileStatus.loading) {
-        } else if (state.status == GetMarkdownFileStatus.loading) {}
       },
       builder: (context, state) {
         return Column(
@@ -107,7 +100,8 @@ class GetMarkdownFileScreen extends StatelessWidget {
         description = '';
       case GetMarkdownFileStatus.success:
         title = 'Success!';
-        description = 'Import from another file?';
+        description =
+            'Successfully imported from file ${state.note!.fileName}. Import from another file?';
       default:
         title = 'Import to Anki';
         description = 'Select a markdown file to import your flashcards from.';
@@ -122,7 +116,6 @@ class GetMarkdownFileScreen extends StatelessWidget {
             fontSize: 36.0,
             fontWeight: FontWeight.w700,
           ),
-          maxLines: 2,
         ),
         const SizedBox(height: 25.0),
         Padding(
@@ -134,7 +127,6 @@ class GetMarkdownFileScreen extends StatelessWidget {
               color: Colors.black54,
               fontSize: 18.0,
             ),
-            maxLines: 2,
           ),
         ),
       ],
