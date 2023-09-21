@@ -1,3 +1,4 @@
+import 'package:drop_shadow/drop_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,28 +11,20 @@ class GetMarkdownFileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Markdown to Flashcards'),
-      ),
-      body: buildBody(context),
+      body: SafeArea(child: _buildBody(context)),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
+        label: const Text('Select a Markdown File'),
         onPressed: () =>
             context.read<MarkdownToFlashcardCubit>().getMarkdownFile(),
-        label: const Text('Select a Markdown file'),
       ),
     );
   }
 
-  Widget buildBody(BuildContext context) {
+  Widget _buildBody(BuildContext context) {
     return BlocConsumer<MarkdownToFlashcardCubit, MarkdownToFlashcardState>(
       listener: (context, state) {
         switch (state.status) {
-          case GetMarkdownFileStatus.success:
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('File loaded: ${state.note?.fileName}')),
-            );
-            break;
           case GetMarkdownFileStatus.failure:
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('${state.exception}')),
@@ -44,17 +37,84 @@ class GetMarkdownFileScreen extends StatelessWidget {
             break;
           default:
         }
-        if (state.status == GetMarkdownFileStatus.loading) {
-        } else if (state.status == GetMarkdownFileStatus.loading) {}
       },
       builder: (context, state) {
-        switch (state.status) {
-          case GetMarkdownFileStatus.loading:
-            return const Center(child: CircularProgressIndicator());
-          default:
-            return Container();
-        }
+        return Column(
+          children: [
+            Expanded(child: _buildImage(context, state)),
+            Expanded(child: _buildDescription(context, state)),
+          ],
+        );
       },
+    );
+  }
+
+  Widget _buildImage(BuildContext context, MarkdownToFlashcardState state) {
+    switch (state.status) {
+      case GetMarkdownFileStatus.loading:
+        return const Center(child: CircularProgressIndicator());
+      case GetMarkdownFileStatus.success:
+        return const Center(
+          child: Icon(
+            Icons.check_circle_outline_rounded,
+            size: 200.0,
+            color: Colors.green,
+          ),
+        );
+      default:
+        return Center(
+          child: DropShadow(
+            offset: const Offset(8.0, 8.0),
+            child: Image.asset(
+              'assets/images/anki.png',
+              scale: 5.0,
+            ),
+          ),
+        );
+    }
+  }
+
+  Widget _buildDescription(
+      BuildContext context, MarkdownToFlashcardState state) {
+    String title;
+    String description;
+
+    switch (state.status) {
+      case GetMarkdownFileStatus.loading:
+        title = '';
+        description = '';
+      case GetMarkdownFileStatus.success:
+        title = 'Success!';
+        description =
+            'Successfully imported from file ${state.note!.fileName}. Import from another file?';
+      default:
+        title = 'Import to Anki';
+        description = 'Select a markdown file to import your flashcards from.';
+    }
+
+    return Column(
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 36.0,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 25.0),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+          child: Text(
+            description,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.black54,
+              fontSize: 18.0,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
