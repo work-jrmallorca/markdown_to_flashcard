@@ -1,6 +1,5 @@
 import 'package:drop_shadow/drop_shadow.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/markdown_to_flashcard_cubit.dart';
@@ -11,22 +10,8 @@ class GetMarkdownFileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-    ));
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Padding(
-          padding: EdgeInsets.only(left: 16.0, top: 16.0),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-        child: buildBody(context),
-      ),
+      body: SafeArea(child: _buildBody(context)),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         label: const Text('Select a Markdown File'),
@@ -36,7 +21,7 @@ class GetMarkdownFileScreen extends StatelessWidget {
     );
   }
 
-  Widget buildBody(BuildContext context) {
+  Widget _buildBody(BuildContext context) {
     return BlocConsumer<MarkdownToFlashcardCubit, MarkdownToFlashcardState>(
       listener: (context, state) {
         switch (state.status) {
