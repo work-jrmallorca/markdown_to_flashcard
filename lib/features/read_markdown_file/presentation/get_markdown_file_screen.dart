@@ -64,7 +64,7 @@ class GetMarkdownFileScreen extends StatelessWidget {
         return Column(
           children: [
             Expanded(child: _buildImage(context, state)),
-            Expanded(child: _buildDescription()),
+            Expanded(child: _buildDescription(context, state)),
           ],
         );
       },
@@ -73,7 +73,17 @@ class GetMarkdownFileScreen extends StatelessWidget {
 
   Widget _buildImage(BuildContext context, MarkdownToFlashcardState state) {
     switch (state.status) {
-      case GetMarkdownFileStatus.initial:
+      case GetMarkdownFileStatus.loading:
+        return const Center(child: CircularProgressIndicator());
+      case GetMarkdownFileStatus.success:
+        return const Center(
+          child: Icon(
+            Icons.check_circle_outline_rounded,
+            size: 200.0,
+            color: Colors.green,
+          ),
+        );
+      default:
         return Center(
           child: DropShadow(
             offset: const Offset(8.0, 8.0),
@@ -83,32 +93,44 @@ class GetMarkdownFileScreen extends StatelessWidget {
             ),
           ),
         );
-      case GetMarkdownFileStatus.loading:
-        return const Center(child: CircularProgressIndicator());
-      default:
-        return Container();
     }
   }
 
-  Widget _buildDescription() {
-    return const Column(
+  Widget _buildDescription(
+      BuildContext context, MarkdownToFlashcardState state) {
+    String title;
+    String description;
+
+    switch (state.status) {
+      case GetMarkdownFileStatus.loading:
+        title = '';
+        description = '';
+      case GetMarkdownFileStatus.success:
+        title = 'Success!';
+        description = 'Import from another file?';
+      default:
+        title = 'Import to Anki';
+        description = 'Select a markdown file to import your flashcards from.';
+    }
+
+    return Column(
       children: [
         Text(
-          'Import to Anki',
-          style: TextStyle(
+          title,
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 36.0,
             fontWeight: FontWeight.w700,
           ),
           maxLines: 2,
         ),
-        SizedBox(height: 25.0),
+        const SizedBox(height: 25.0),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 25.0),
+          padding: const EdgeInsets.symmetric(horizontal: 25.0),
           child: Text(
-            'Select a markdown file to import your flashcards from.',
+            description,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.black54,
               fontSize: 18.0,
             ),
