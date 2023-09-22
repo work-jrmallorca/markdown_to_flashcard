@@ -50,14 +50,11 @@ void main() {
     test(
         'GIVEN a note has no question-answer pairs, '
         "WHEN 'call()' is called from the use case, "
-        "THEN don't call 'invokeMethod()' from the method channel, "
-        'AND return an empty list.', () async {
+        "THEN don't call 'invokeMethod()' from the method channel, ", () async {
       Note note = emptyNote;
-      const List<int> expected = [];
 
-      final List<int> result = await useCase(note);
+      await useCase(note);
 
-      expect(result, expected);
       verifyZeroInteractions(mock);
     });
 
@@ -70,7 +67,7 @@ void main() {
       when(() => mock.invokeMethod(any(), any()))
           .thenThrow(PlatformException(code: ''));
 
-      final Future<List<int>> Function(Note note) result = useCase.call;
+      final Future<void> Function(Note note) result = useCase.call;
 
       expect(
         () async => await result(note),
@@ -82,31 +79,27 @@ void main() {
     test(
         'GIVEN a note has one question-answer pair, '
         "WHEN 'call()' is called from the use case, "
-        "THEN call 'invokeMethod()' once from the method channel, "
-        'AND return a list with one note ID.', () async {
+        "THEN call 'invokeMethod()' once from the method channel, ", () async {
       Note note = noteWithOneQAPair;
-      const List<int> expected = [123];
       when(() => mock.invokeMethod(any(), any())).thenAnswer((_) async => 123);
 
-      final List<int> result = await useCase(note);
+      await useCase(note);
 
-      expect(result, expected);
       verify(() => mock.invokeMethod(any(), any())).called(1);
     });
 
     test(
         'GIVEN a note has multiple question-answer pairs, '
         "WHEN 'call()' is called from the use case, "
-        "THEN call 'invokeMethod()' multiple times from the method channel, "
-        'AND return a list with multiple note IDs.', () async {
+        "THEN call 'invokeMethod()' multiple times from the method channel, ",
+        () async {
       Note note = noteWithMultipleQAPairs;
       when(() => mock.invokeMethod(any(), any()))
           .thenAnswer((_) async => Random().nextInt(10));
 
-      final List<int> result = await useCase(note);
+      await useCase(note);
 
-      expect(result.length, note.questionAnswerPairs.length);
-      verify(() => mock.invokeMethod(any(), any())).called(3);
+      verify(() => mock.invokeMethod(any(), any())).called(1);
     });
   });
 }

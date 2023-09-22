@@ -22,17 +22,16 @@ class MarkdownToFlashcardCubit extends Cubit<MarkdownToFlashcardState> {
     emit(state.copyWith(status: GetMarkdownFileStatus.loading));
 
     try {
-      final Note? note = await convertMarkdownNoteToDartNote();
+      Note? note = await convertMarkdownNoteToDartNote();
 
       if (note != null) {
-        Note noteHTMLConverted = convertMarkdownToHTMLUseCase(note);
-        final List<int> qaPairIds =
-            await addQuestionAnswerPairsInNoteToAnkidroid(noteHTMLConverted);
+        note = convertMarkdownToHTMLUseCase(note);
+        await addQuestionAnswerPairsInNoteToAnkidroid(note);
 
         emit(
           state.copyWith(
             status: GetMarkdownFileStatus.success,
-            note: noteHTMLConverted,
+            note: note,
           ),
         );
       } else {

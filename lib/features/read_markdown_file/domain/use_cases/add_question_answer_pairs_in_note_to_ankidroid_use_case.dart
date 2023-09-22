@@ -8,24 +8,24 @@ class AddQuestionAnswerPairsInNoteToAnkidroidUseCase {
 
   AddQuestionAnswerPairsInNoteToAnkidroidUseCase({required this.methodChannel});
 
-  Future<List<int>> call(Note note) async {
-    List<int> createdNoteIds = [];
+  Future<void> call(Note note) async {
+    if (note.questionAnswerPairs.isNotEmpty) {
+      List<List<String>> fieldsList = [];
+      List<List<String>> tagsList = [];
 
-    for (QuestionAnswerPair qaPair in note.questionAnswerPairs) {
-      int createdNoteId = await methodChannel.invokeMethod(
-        'addAnkiNote',
+      for (QuestionAnswerPair qaPair in note.questionAnswerPairs) {
+        fieldsList.add([qaPair.question, qaPair.answer, note.fileName]);
+        tagsList.add(note.tags);
+      }
+
+      await methodChannel.invokeMethod(
+        'addAnkiNotes',
         <String, dynamic>{
           'deck': note.deck,
-          'question': qaPair.question,
-          'answer': qaPair.answer,
-          'source': note.fileName,
-          'tags': note.tags,
+          'fields': fieldsList,
+          'tags': tagsList,
         },
       );
-
-      createdNoteIds.add(createdNoteId);
     }
-
-    return createdNoteIds;
   }
 }
