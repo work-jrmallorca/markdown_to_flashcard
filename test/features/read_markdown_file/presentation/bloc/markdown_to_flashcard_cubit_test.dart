@@ -43,7 +43,6 @@ void main() {
 
   group('getMarkdownFile()', () {
     const Note expectedNote = emptyNote;
-    const List<int> expectedNoteIds = [];
     final Exception exception = Exception('Failed to get Markdown file.');
 
     blocTest<MarkdownToFlashcardCubit, MarkdownToFlashcardState>(
@@ -56,8 +55,7 @@ void main() {
             .thenAnswer((_) async => expectedNote);
         when(() => mockConvertMarkdownToHTMLUseCase(expectedNote))
             .thenReturn(expectedNote);
-        when(() => mockAddUseCase(expectedNote))
-            .thenAnswer((_) async => expectedNoteIds);
+        when(() => mockAddUseCase(expectedNote)).thenAnswer((_) async {});
       },
       build: () => cubit,
       act: (cubit) => cubit.getMarkdownFile(),
