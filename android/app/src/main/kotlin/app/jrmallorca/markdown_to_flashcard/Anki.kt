@@ -58,19 +58,13 @@ class Anki(private val context: Context) {
         )
     }
 
-    fun addAnkiNote(
+    fun addAnkiNotes(
         deck: String,
-        question: String,
-        answer: String,
-        source: String,
-        tags: Set<String>,
-    ): Long? {
-        val fields = arrayOf(
-            question,
-            answer,
-            source
-        )
-
-        return api.addNote(getModelId()!!, getDeckId(deck)!!, fields, tags)
+        fields: List<List<String>>,
+        tags: List<List<String>>,
+    ): Int {
+        val fieldsAsArray: List<Array<String>> = fields.map { it.toTypedArray() }
+        val tagsAsSet: List<Set<String>> = tags.map { it.toSet() }
+        return api.addNotes(getModelId()!!, getDeckId(deck)!!, fieldsAsArray, tagsAsSet)
     }
 }
