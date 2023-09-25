@@ -4,10 +4,13 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.SparseArray
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.ichi2.anki.api.AddContentApi
 import com.ichi2.anki.api.AddContentApi.READ_WRITE_PERMISSION
+import com.ichi2.anki.api.NoteInfo
+
 
 class Anki(private val context: Context) {
     private var api: AddContentApi = AddContentApi(context)
@@ -63,8 +66,47 @@ class Anki(private val context: Context) {
         fields: List<List<String>>,
         tags: List<List<String>>,
     ): Int {
+        val modelId = getModelId()!!
+        removeDuplicates(modelId, fields, tags)
+
         val fieldsAsArray: List<Array<String>> = fields.map { it.toTypedArray() }
         val tagsAsSet: List<Set<String>> = tags.map { it.toSet() }
-        return api.addNotes(getModelId()!!, getDeckId(deck)!!, fieldsAsArray, tagsAsSet)
+
+        return api.addNotes(modelId, getDeckId(deck)!!, fieldsAsArray, tagsAsSet)
+    }
+
+    private fun removeDuplicates(modelId: Long, fields: List<List<String>>, tags: List<List<String>>) {
+        // Build a list of the duplicate keys (first fields) and find all notes that have a match with each key
+        val keys: MutableList<String> = ArrayList(fields.size)
+        for (f in fields) {
+            keys.add(f[0])
+        }
+
+        val duplicateNotes: SparseArray<List<NoteInfo>> = api.findDuplicateNotes(modelId, keys)
+
+        // Do some sanity checks
+        if (tags.size != fields.size) {
+            throw IllegalStateException("List of tags must be the same length as the list of fields")
+        }
+        if (duplicateNotes.size() == 0 || fields.isEmpty() || tags.isEmpty()) {
+            return
+        }
+        if (duplicateNotes.keyAt(duplicateNotes.size() - 1) >= fields.size) {
+            throw IllegalStateException("The array of duplicates goes outside the bounds of the original lists")
+        }
+
+        val fieldIterator: MutableListIterator<List<String>> = fields.toMutableList().listIterator()
+        val tagsIterator: MutableListIterator<List<String>> = tags.toMutableList().listIterator()
+        var listIndex: Int = -1
+        for (i in 0 until duplicateNotes.size()) {
+            val duplicateIndex: Int = duplicateNotes.keyAt(i)
+            while (listIndex < duplicateIndex) {
+                fieldIterator.next()
+                tagsIterator.next()
+                listIndex++
+            }
+            fieldIterator.remove()
+            tagsIterator.remove()
+        }
     }
 }
