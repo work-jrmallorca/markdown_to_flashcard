@@ -1,6 +1,7 @@
 import 'package:drop_shadow/drop_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 import 'bloc/markdown_to_flashcard_cubit.dart';
 import 'bloc/markdown_to_flashcard_state.dart';
@@ -39,35 +40,39 @@ class GetMarkdownFileScreen extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        return Column(
-          children: [
-            Expanded(child: _buildImage(context, state)),
-            Expanded(child: _buildDescription(context, state)),
-          ],
-        );
+        return state.status == GetMarkdownFileStatus.loading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  Expanded(child: _buildImage(context, state)),
+                  Expanded(child: _buildDescription(context, state)),
+                ],
+              );
       },
     );
   }
 
   Widget _buildImage(BuildContext context, MarkdownToFlashcardState state) {
     switch (state.status) {
-      case GetMarkdownFileStatus.loading:
-        return const Center(child: CircularProgressIndicator());
       case GetMarkdownFileStatus.success:
-        return const Center(
-          child: Icon(
-            Icons.check_circle_outline_rounded,
-            size: 200.0,
-            color: Colors.green,
+        return Center(
+          child: Shimmer(
+            child: const Icon(
+              Icons.check_circle_outline_rounded,
+              size: 200.0,
+              color: Colors.green,
+            ),
           ),
         );
       default:
         return Center(
           child: DropShadow(
             offset: const Offset(8.0, 8.0),
-            child: Image.asset(
-              'assets/images/anki.png',
-              scale: 5.0,
+            child: Shimmer(
+              child: Image.asset(
+                'assets/images/anki.png',
+                scale: 5.0,
+              ),
             ),
           ),
         );
