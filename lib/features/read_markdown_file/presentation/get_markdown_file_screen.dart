@@ -55,11 +55,13 @@ class GetMarkdownFileScreen extends StatelessWidget {
       case GetMarkdownFileStatus.loading:
         return const Center(child: CircularProgressIndicator());
       case GetMarkdownFileStatus.success:
-        return const Center(
-          child: Icon(
-            Icons.check_circle_outline_rounded,
-            size: 200.0,
-            color: Colors.green,
+        return Center(
+          child: Shimmer(
+            child: const Icon(
+              Icons.check_circle_outline_rounded,
+              size: 200.0,
+              color: Colors.green,
+            ),
           ),
         );
       default:
