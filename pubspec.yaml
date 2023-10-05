@@ -43,6 +43,7 @@ dependencies:
   bloc_test: ^9.1.4
   markdown: ^7.1.1
   drop_shadow: ^0.1.0
+  shimmer_animation: ^2.1.0+1
 
 dev_dependencies:
   flutter_test:

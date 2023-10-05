@@ -1,6 +1,7 @@
 import 'package:drop_shadow/drop_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 import 'bloc/markdown_to_flashcard_cubit.dart';
 import 'bloc/markdown_to_flashcard_state.dart';
@@ -65,9 +66,11 @@ class GetMarkdownFileScreen extends StatelessWidget {
         return Center(
           child: DropShadow(
             offset: const Offset(8.0, 8.0),
-            child: Image.asset(
-              'assets/images/anki.png',
-              scale: 5.0,
+            child: Shimmer(
+              child: Image.asset(
+                'assets/images/anki.png',
+                scale: 5.0,
+              ),
             ),
           ),
         );
