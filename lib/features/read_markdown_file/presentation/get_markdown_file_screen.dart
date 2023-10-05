@@ -40,20 +40,20 @@ class GetMarkdownFileScreen extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        return Column(
-          children: [
-            Expanded(child: _buildImage(context, state)),
-            Expanded(child: _buildDescription(context, state)),
-          ],
-        );
+        return state.status == GetMarkdownFileStatus.loading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  Expanded(child: _buildImage(context, state)),
+                  Expanded(child: _buildDescription(context, state)),
+                ],
+              );
       },
     );
   }
 
   Widget _buildImage(BuildContext context, MarkdownToFlashcardState state) {
     switch (state.status) {
-      case GetMarkdownFileStatus.loading:
-        return const Center(child: CircularProgressIndicator());
       case GetMarkdownFileStatus.success:
         return Center(
           child: Shimmer(
