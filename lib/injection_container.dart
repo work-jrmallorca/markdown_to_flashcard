@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:markdown_to_flashcard/features/theme/presentation/bloc/theme_cubit.dart';
 
 import 'features/read_markdown_file/data/data_sources/markdown_file_picker_local_data_source.dart';
 import 'features/read_markdown_file/data/repositories/markdown_file_repository.dart';
@@ -52,6 +53,9 @@ void init() {
   sl.registerLazySingleton(
     () => MarkdownFilePickerLocalDataSource(),
   );
+
+  // Theme
+  sl.registerFactory(() => ThemeCubit());
 
   // Core
   sl.registerLazySingleton(

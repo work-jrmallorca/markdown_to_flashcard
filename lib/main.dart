@@ -5,6 +5,8 @@ import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cas
 import 'features/read_markdown_file/presentation/bloc/markdown_to_flashcard_cubit.dart';
 import 'features/read_markdown_file/presentation/get_markdown_file_screen.dart';
 import '../../../injection_container.dart' as di;
+import 'features/theme/presentation/bloc/theme_cubit.dart';
+import 'features/theme/presentation/bloc/theme_state.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,11 +20,23 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => di.sl<MarkdownToFlashcardCubit>(),
-      child: const MaterialApp(
-        title: 'Markdown to Flashcards',
-        home: GetMarkdownFileScreen(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<MarkdownToFlashcardCubit>(
+          create: (_) => di.sl<MarkdownToFlashcardCubit>(),
+        ),
+        BlocProvider<ThemeCubit>(
+          create: (_) => ThemeCubit(),
+        ),
+      ],
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, state) {
+          return MaterialApp(
+            title: 'Markdown to Flashcards',
+            theme: state.themeData,
+            home: const GetMarkdownFileScreen(),
+          );
+        },
       ),
     );
   }
