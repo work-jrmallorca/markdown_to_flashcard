@@ -44,6 +44,7 @@ dependencies:
   markdown: ^7.1.1
   drop_shadow: ^0.1.0
   shimmer_animation: ^2.1.0+1
+  flex_color_scheme: ^7.3.1
 
 dev_dependencies:
   flutter_test:
