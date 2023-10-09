@@ -1,6 +1,7 @@
 import 'package:drop_shadow/drop_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:markdown_to_flashcard/features/theme/presentation/widgets/cycle_theme_button.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 import 'bloc/markdown_to_flashcard_cubit.dart';
@@ -13,11 +14,34 @@ class GetMarkdownFileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(child: _buildBody(context)),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
-        label: const Text('Select a Markdown File'),
-        onPressed: () =>
-            context.read<MarkdownToFlashcardCubit>().getMarkdownFile(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: ClipRRect(
+        borderRadius: BorderRadius.circular(32),
+        child: Shimmer(
+          child: FloatingActionButton.extended(
+            label: const Text('Select a Markdown File'),
+            onPressed: () =>
+                context.read<MarkdownToFlashcardCubit>().getMarkdownFile(),
+          ),
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        shape: const AutomaticNotchedShape(
+          RoundedRectangleBorder(),
+          StadiumBorder(side: BorderSide()),
+        ),
+        notchMargin: 8.0,
+        child: Row(
+          children: <Widget>[
+            IconButton(
+              tooltip: 'Open navigation menu',
+              icon: const Icon(Icons.menu),
+              onPressed: () {},
+            ),
+            const Spacer(),
+            const CycleThemeButton(),
+          ],
+        ),
       ),
     );
   }
@@ -68,11 +92,10 @@ class GetMarkdownFileScreen extends StatelessWidget {
         return Center(
           child: DropShadow(
             offset: const Offset(8.0, 8.0),
-            child: Shimmer(
-              child: Image.asset(
-                'assets/images/anki.png',
-                scale: 5.0,
-              ),
+            color: Colors.black54,
+            child: Image.asset(
+              'assets/images/anki.png',
+              scale: 5.0,
             ),
           ),
         );
@@ -102,7 +125,6 @@ class GetMarkdownFileScreen extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
-            color: Colors.black,
             fontSize: 36.0,
             fontWeight: FontWeight.w700,
           ),
@@ -114,7 +136,6 @@ class GetMarkdownFileScreen extends StatelessWidget {
             description,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: Colors.black54,
               fontSize: 18.0,
             ),
           ),
