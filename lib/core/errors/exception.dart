@@ -3,3 +3,9 @@ class ConversionException implements Exception {
 
   ConversionException({this.message});
 }
+
+class ThemeNotSetException implements Exception {
+  String? message;
+
+  ThemeNotSetException({this.message});
+}
