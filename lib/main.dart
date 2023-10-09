@@ -8,9 +8,9 @@ import '../../../injection_container.dart' as di;
 import 'features/theme/presentation/bloc/theme_cubit.dart';
 import 'features/theme/presentation/bloc/theme_state.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  di.init();
+  await di.init();
   di.sl<RequestAnkidroidPermissionUseCase>().call();
   runApp(const MyApp());
 }
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
           create: (_) => di.sl<MarkdownToFlashcardCubit>(),
         ),
         BlocProvider<ThemeCubit>(
-          create: (_) => ThemeCubit(),
+          create: (_) => di.sl<ThemeCubit>(),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(

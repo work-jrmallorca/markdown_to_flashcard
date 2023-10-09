@@ -1,6 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:markdown_to_flashcard/features/theme/data/data_sources/theme_local_data_source.dart';
+import 'package:markdown_to_flashcard/features/theme/data/repositories/theme_repository.dart';
 import 'package:markdown_to_flashcard/features/theme/presentation/bloc/theme_cubit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/read_markdown_file/data/data_sources/markdown_file_picker_local_data_source.dart';
 import 'features/read_markdown_file/data/repositories/markdown_file_repository.dart';
@@ -12,7 +15,7 @@ import 'features/read_markdown_file/presentation/bloc/markdown_to_flashcard_cubi
 
 final sl = GetIt.instance;
 
-void init() {
+Future<void> init() async {
   // Features
   sl.registerFactory(
     () => MarkdownToFlashcardCubit(
@@ -55,7 +58,20 @@ void init() {
   );
 
   // Theme
-  sl.registerFactory(() => ThemeCubit());
+  sl.registerFactory(() => ThemeCubit(repository: sl()));
+
+  sl.registerLazySingleton(
+    () => ThemeRepository(
+      localDataSource: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => ThemeLocalDataSource(
+      key: 'themeStatus',
+      preferences: sl(),
+    ),
+  );
 
   // Core
   sl.registerLazySingleton(
@@ -63,4 +79,6 @@ void init() {
   );
 
   // External
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
 }
