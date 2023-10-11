@@ -1,6 +1,7 @@
 import 'package:drop_shadow/drop_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:markdown_to_flashcard/features/theme/presentation/widgets/cycle_theme_button.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
@@ -35,8 +36,8 @@ class GetMarkdownFileScreen extends StatelessWidget {
           children: <Widget>[
             IconButton(
               tooltip: 'Open navigation menu',
-              icon: const Icon(Icons.menu),
-              onPressed: () {},
+              icon: const Icon(Icons.question_mark_rounded),
+              onPressed: () => context.go('/tutorial'),
             ),
             const Spacer(),
             const CycleThemeButton(),
