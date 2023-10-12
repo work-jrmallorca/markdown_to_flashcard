@@ -23,6 +23,21 @@ class MainActivity: FlutterActivity() {
                     }
                     result.success(true)
                 }
+                "addAnkiNote" -> {
+                    val noteId: Long? = anki.addAnkiNote(
+                        call.argument<String>("deck")!!,
+                        call.argument<String>("question")!!,
+                        call.argument<String>("answer")!!,
+                        call.argument<String>("source")!!,
+                        call.argument<List<String>>("tags")!!.toSet()
+                    )
+
+                    if (noteId != null) {
+                        result.success(noteId)
+                    } else {
+                        result.error("FAILURE", "Failed to add Anki notes", null)
+                    }
+                }
                 "addAnkiNotes" -> {
                     val notesAdded: Int = anki.addAnkiNotes(
                         call.argument<String>("deck")!!,
