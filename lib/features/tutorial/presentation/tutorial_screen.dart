@@ -113,7 +113,7 @@ The question and answer pairs do not need to be at the end of the file.
   Text _buildDescription() {
     return const Text(
       '''
-The following snippet below is an example of a correctly formatted Markdown file.
+The following snippet below is an example of a correctly formatted Markdown (.md) or text (.txt) file.
 
 Select the question mark icon for more information on each section.
       ''',
@@ -125,7 +125,7 @@ Select the question mark icon for more information on each section.
 
   Widget _buildTitle() {
     return const Text(
-      'How to correctly format a Markdown file for importing',
+      'How to correctly format files for import',
       style: TextStyle(
         fontSize: 36.0,
         fontWeight: FontWeight.w700,

@@ -4,6 +4,6 @@ import 'package:file_picker/file_picker.dart';
 class MarkdownFilePickerLocalDataSource {
   Future<FilePickerResult?> call() async => await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['md'],
+        allowedExtensions: ['md', 'txt'],
       );
 }
