@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/data/data_sources/agnostic_os_file_picker_local_data_source.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/data/data_sources/agnostic_os_files_local_data_source.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockPickFilesProxy extends Mock implements PickFilesProxy {}
