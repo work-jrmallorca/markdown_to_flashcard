@@ -1,9 +1,6 @@
-import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 
 // The result will be null, if the user aborted the dialog
-class MarkdownFilePickerLocalDataSource {
-  Future<FilePickerResult?> call() async => await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['md', 'txt'],
-      );
+abstract class MarkdownFilesLocalDataSource {
+  Future<File?> getFile();
 }
