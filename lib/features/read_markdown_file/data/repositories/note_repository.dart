@@ -1,34 +1,28 @@
-import 'dart:io';
+import 'package:markdown_to_flashcard/features/read_markdown_file/data/entities/note_entity.dart';
 
-import 'package:markdown_to_flashcard/core/errors/exception.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/domain/entities/note.dart';
+import '../../../../core/errors/exception.dart';
+import '../../domain/entities/note.dart';
+import '../../domain/entities/question_answer_pair.dart';
+import '../data_sources/markdown_files_local_data_source.dart';
 
-import '../../data/repositories/markdown_file_repository.dart';
-import '../entities/question_answer_pair.dart';
+class NoteRepository {
+  final MarkdownFilesLocalDataSource localDataSource;
 
-class ConvertMarkdownNoteToDartNoteUseCase {
-  final MarkdownFileRepository repository;
+  NoteRepository({required this.localDataSource});
 
-  ConvertMarkdownNoteToDartNoteUseCase({required this.repository});
+  Future<Note?> getNote() async {
+    NoteEntity? entity = await localDataSource.getFile();
 
-  Future<Note?> call() async {
-    File? file = await repository.getMarkdownFile();
-
-    if (file != null) {
-      String fileContents = await file.readAsString();
-
-      return Note(
-        fileName: _getFileName(file.path),
-        deck: _getDeck(fileContents),
-        tags: _getTags(fileContents),
-        questionAnswerPairs: _getQuestionAnswerPairs(fileContents),
-      );
-    } else {
-      return null;
-    }
+    return entity != null
+        ? Note(
+            uri: entity.uri,
+            fileName: entity.fileName,
+            deck: _getDeck(entity.fileContents),
+            tags: _getTags(entity.fileContents),
+            questionAnswerPairs: _getQuestionAnswerPairs(entity.fileContents),
+          )
+        : null;
   }
-
-  String _getFileName(String path) => path.split('/').last;
 
   String _getDeck(String fileContents) {
     RegExp regex = RegExp(r'deck: ([^\n]+)');

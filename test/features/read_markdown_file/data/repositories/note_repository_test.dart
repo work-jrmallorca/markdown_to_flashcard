@@ -2,14 +2,15 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:markdown_to_flashcard/core/errors/exception.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/data/repositories/markdown_file_repository.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/data/data_sources/markdown_files_local_data_source.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/data/entities/note_entity.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/data/repositories/note_repository.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/entities/note.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/entities/question_answer_pair.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/convert_markdown_note_to_dart_note_use_case.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockMarkdownFileRepository extends Mock
-    implements MarkdownFileRepository {}
+class MockMarkdownFilePickerLocalDataSource extends Mock
+    implements MarkdownFilesLocalDataSource {}
 
 void main() {
   final File noDeckNoTagsNoQaFile =
@@ -25,12 +26,12 @@ void main() {
   final File deckMultipleTagsMultipleQaFile =
       File('test/fixtures/file_with__deck_multiple-tags_multiple-qa.md');
 
-  late MockMarkdownFileRepository mock;
-  late ConvertMarkdownNoteToDartNoteUseCase useCase;
+  late MockMarkdownFilePickerLocalDataSource mock;
+  late NoteRepository repository;
 
   setUp(() {
-    mock = MockMarkdownFileRepository();
-    useCase = ConvertMarkdownNoteToDartNoteUseCase(repository: mock);
+    mock = MockMarkdownFilePickerLocalDataSource();
+    repository = NoteRepository(localDataSource: mock);
   });
 
   group('call()', () {
@@ -40,12 +41,12 @@ void main() {
         "THEN call 'getMarkdownFile()' once from the repository, "
         "AND return 'null'", () async {
       const Note? expected = null;
-      when(() => mock.getMarkdownFile()).thenAnswer((_) async => null);
+      when(() => mock.getFile()).thenAnswer((_) async => null);
 
-      final Note? result = await useCase();
+      final Note? result = await repository.getNote();
 
       expect(result, expected);
-      verify(() => mock.getMarkdownFile()).called(1);
+      verify(() => mock.getFile()).called(1);
     });
 
     test(
@@ -54,12 +55,16 @@ void main() {
         "THEN call 'getMarkdownFile()' once from the repository, "
         'AND throw a ConversionException', () async {
       File file = noDeckNoTagsNoQaFile;
-      when(() => mock.getMarkdownFile()).thenAnswer((_) async => file);
+      NoteEntity entity = NoteEntity(
+        fileName: file.path.split('/').last,
+        fileContents: file.readAsStringSync(),
+      );
+      when(() => mock.getFile()).thenAnswer((_) async => entity);
 
-      final Future<Note?> Function() result = useCase.call;
+      final Future<Note?> Function() result = repository.getNote;
 
       expect(() async => await result(), throwsA(isA<ConversionException>()));
-      verify(() => mock.getMarkdownFile()).called(1);
+      verify(() => mock.getFile()).called(1);
     });
 
     test(
@@ -68,13 +73,16 @@ void main() {
         "THEN call 'getMarkdownFile()' once from the repository, "
         'AND throw a ConversionException', () async {
       File file = deckNoTagsNoQaFile;
+      NoteEntity entity = NoteEntity(
+        fileName: file.path.split('/').last,
+        fileContents: file.readAsStringSync(),
+      );
+      when(() => mock.getFile()).thenAnswer((_) async => entity);
 
-      when(() => mock.getMarkdownFile()).thenAnswer((_) async => file);
-
-      final Future<Note?> Function() result = useCase.call;
+      final Future<Note?> Function() result = repository.getNote;
 
       expect(() async => await result(), throwsA(isA<ConversionException>()));
-      verify(() => mock.getMarkdownFile()).called(1);
+      verify(() => mock.getFile()).called(1);
     });
 
     test(
@@ -83,13 +91,16 @@ void main() {
         "THEN call 'getMarkdownFile()' once from the repository, "
         'AND throw a ConversionException', () async {
       File file = deckOneTagNoQaFile;
+      NoteEntity entity = NoteEntity(
+        fileName: file.path.split('/').last,
+        fileContents: file.readAsStringSync(),
+      );
+      when(() => mock.getFile()).thenAnswer((_) async => entity);
 
-      when(() => mock.getMarkdownFile()).thenAnswer((_) async => file);
-
-      final Future<Note?> Function() result = useCase.call;
+      final Future<Note?> Function() result = repository.getNote;
 
       expect(() async => await result(), throwsA(isA<ConversionException>()));
-      verify(() => mock.getMarkdownFile()).called(1);
+      verify(() => mock.getFile()).called(1);
     });
 
     test(
@@ -98,12 +109,16 @@ void main() {
         "THEN call 'getMarkdownFile()' once from the repository, "
         "AND return 'Note'", () async {
       File file = deckMultipleTagsNoQaFile;
-      when(() => mock.getMarkdownFile()).thenAnswer((_) async => file);
+      NoteEntity entity = NoteEntity(
+        fileName: file.path.split('/').last,
+        fileContents: file.readAsStringSync(),
+      );
+      when(() => mock.getFile()).thenAnswer((_) async => entity);
 
-      final Future<Note?> Function() result = useCase.call;
+      final Future<Note?> Function() result = repository.getNote;
 
       expect(() async => await result(), throwsA(isA<ConversionException>()));
-      verify(() => mock.getMarkdownFile()).called(1);
+      verify(() => mock.getFile()).called(1);
     });
 
     test(
@@ -112,6 +127,10 @@ void main() {
         "THEN call 'getMarkdownFile()' once from the repository, "
         "AND return 'Note'", () async {
       File file = deckMultipleTagsOneQaFile;
+      NoteEntity entity = NoteEntity(
+        fileName: file.path.split('/').last,
+        fileContents: file.readAsStringSync(),
+      );
       Note expected = Note(
         fileName: file.path.split('/').last,
         deck: 'test deck',
@@ -123,12 +142,12 @@ void main() {
           ),
         ],
       );
-      when(() => mock.getMarkdownFile()).thenAnswer((_) async => file);
+      when(() => mock.getFile()).thenAnswer((_) async => entity);
 
-      final Note? result = await useCase();
+      final Note? result = await repository.getNote();
 
       expect(result, expected);
-      verify(() => mock.getMarkdownFile()).called(1);
+      verify(() => mock.getFile()).called(1);
     });
 
     test(
@@ -137,7 +156,10 @@ void main() {
         "THEN call 'getMarkdownFile()' once from the repository, "
         "AND return 'Note'", () async {
       File file = deckMultipleTagsMultipleQaFile;
-
+      NoteEntity entity = NoteEntity(
+        fileName: file.path.split('/').last,
+        fileContents: file.readAsStringSync(),
+      );
       Note expected = Note(
         fileName: file.path.split('/').last,
         deck: 'test deck',
@@ -157,12 +179,12 @@ void main() {
           ),
         ],
       );
-      when(() => mock.getMarkdownFile()).thenAnswer((_) async => file);
+      when(() => mock.getFile()).thenAnswer((_) async => entity);
 
-      final Note? result = await useCase();
+      final Note? result = await repository.getNote();
 
       expect(result, expected);
-      verify(() => mock.getMarkdownFile()).called(1);
+      verify(() => mock.getFile()).called(1);
     });
   });
 }

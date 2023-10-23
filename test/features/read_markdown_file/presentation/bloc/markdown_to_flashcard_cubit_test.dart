@@ -1,15 +1,14 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/data/repositories/note_repository.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/entities/note.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/add_question_answer_pairs_in_note_to_ankidroid_use_case.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/convert_markdown_note_to_dart_note_use_case.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/convert_markdown_to_html_use_case.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/markdown_to_flashcard_cubit.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/markdown_to_flashcard_state.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockConvertMarkdownNoteToDartNoteUseCase extends Mock
-    implements ConvertMarkdownNoteToDartNoteUseCase {}
+class MockNoteRepository extends Mock implements NoteRepository {}
 
 class MockConvertMarkdownToHTMLUseCase extends Mock
     implements ConvertMarkdownToHTMLUseCase {}
@@ -25,17 +24,17 @@ void main() {
     questionAnswerPairs: [],
   );
 
-  late MockConvertMarkdownNoteToDartNoteUseCase mockConvertFileToDartUseCase;
+  late MockNoteRepository mockNoteRepository;
   late MockConvertMarkdownToHTMLUseCase mockConvertMarkdownToHTMLUseCase;
   late MockAddQuestionAnswerPairsInNoteToAnkidroidUseCase mockAddUseCase;
   late MarkdownToFlashcardCubit cubit;
 
   setUp(() {
-    mockConvertFileToDartUseCase = MockConvertMarkdownNoteToDartNoteUseCase();
+    mockNoteRepository = MockNoteRepository();
     mockConvertMarkdownToHTMLUseCase = MockConvertMarkdownToHTMLUseCase();
     mockAddUseCase = MockAddQuestionAnswerPairsInNoteToAnkidroidUseCase();
     cubit = MarkdownToFlashcardCubit(
-      convertMarkdownNoteToDartNote: mockConvertFileToDartUseCase,
+      noteRepository: mockNoteRepository,
       convertMarkdownToHTMLUseCase: mockConvertMarkdownToHTMLUseCase,
       addQuestionAnswerPairsInNoteToAnkidroid: mockAddUseCase,
     );
@@ -51,7 +50,7 @@ void main() {
       'THEN call all usecases, '
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.success]',
       setUp: () {
-        when(() => mockConvertFileToDartUseCase())
+        when(() => mockNoteRepository.getNote())
             .thenAnswer((_) async => expectedNote);
         when(() => mockConvertMarkdownToHTMLUseCase(expectedNote))
             .thenReturn(expectedNote);
@@ -60,7 +59,7 @@ void main() {
       build: () => cubit,
       act: (cubit) => cubit.getMarkdownFile(),
       verify: (_) async {
-        verify(() => mockConvertFileToDartUseCase()).called(1);
+        verify(() => mockNoteRepository.getNote()).called(1);
         verify(() => mockConvertMarkdownToHTMLUseCase(expectedNote)).called(1);
         verify(() => mockAddUseCase(expectedNote)).called(1);
       },
@@ -79,11 +78,10 @@ void main() {
       'THEN throw exception when converting file to PODO, '
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.failure]',
       setUp: () =>
-          when(() => mockConvertFileToDartUseCase()).thenThrow(exception),
+          when(() => mockNoteRepository.getNote()).thenThrow(exception),
       build: () => cubit,
       act: (cubit) => cubit.getMarkdownFile(),
-      verify: (_) async =>
-          verify(() => mockConvertFileToDartUseCase()).called(1),
+      verify: (_) async => verify(() => mockNoteRepository.getNote()).called(1),
       expect: () => <MarkdownToFlashcardState>[
         const MarkdownToFlashcardState(status: GetMarkdownFileStatus.loading),
         MarkdownToFlashcardState(
@@ -99,7 +97,7 @@ void main() {
       'THEN throw exception when converting markdown to HTML, '
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.failure]',
       setUp: () {
-        when(() => mockConvertFileToDartUseCase())
+        when(() => mockNoteRepository.getNote())
             .thenAnswer((_) async => expectedNote);
         when(() => mockConvertMarkdownToHTMLUseCase(expectedNote))
             .thenThrow(exception);
@@ -107,7 +105,7 @@ void main() {
       build: () => cubit,
       act: (cubit) => cubit.getMarkdownFile(),
       verify: (_) async {
-        verify(() => mockConvertFileToDartUseCase()).called(1);
+        verify(() => mockNoteRepository.getNote()).called(1);
         verify(() => mockConvertMarkdownToHTMLUseCase(expectedNote)).called(1);
       },
       expect: () => <MarkdownToFlashcardState>[
@@ -125,7 +123,7 @@ void main() {
       'THEN throw exception when adding note to Ankidroid, '
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.failure]',
       setUp: () {
-        when(() => mockConvertFileToDartUseCase())
+        when(() => mockNoteRepository.getNote())
             .thenAnswer((_) async => expectedNote);
         when(() => mockConvertMarkdownToHTMLUseCase(expectedNote))
             .thenReturn(expectedNote);
@@ -134,7 +132,7 @@ void main() {
       build: () => cubit,
       act: (cubit) => cubit.getMarkdownFile(),
       verify: (_) async {
-        verify(() => mockConvertFileToDartUseCase()).called(1);
+        verify(() => mockNoteRepository.getNote()).called(1);
         verify(() => mockConvertMarkdownToHTMLUseCase(expectedNote)).called(1);
         verify(() => mockAddUseCase(expectedNote)).called(1);
       },
@@ -152,12 +150,11 @@ void main() {
       "WHEN 'getMarkdownFile()' is called from the cubit, "
       "THEN call 'getMarkdownFile()' from the repository, "
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.cancelled]',
-      setUp: () => when(() => mockConvertFileToDartUseCase())
+      setUp: () => when(() => mockNoteRepository.getNote())
           .thenAnswer((_) async => null),
       build: () => cubit,
       act: (cubit) => cubit.getMarkdownFile(),
-      verify: (_) async =>
-          verify(() => mockConvertFileToDartUseCase()).called(1),
+      verify: (_) async => verify(() => mockNoteRepository.getNote()).called(1),
       expect: () => <MarkdownToFlashcardState>[
         const MarkdownToFlashcardState(status: GetMarkdownFileStatus.loading),
         const MarkdownToFlashcardState(status: GetMarkdownFileStatus.cancelled),
