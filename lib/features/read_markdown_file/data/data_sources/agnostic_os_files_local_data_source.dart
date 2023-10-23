@@ -1,6 +1,7 @@
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/data/entities/note_entity.dart';
 
 import 'markdown_files_local_data_source.dart';
 
@@ -19,9 +20,17 @@ class AgnosticOSFilesLocalDataSource implements MarkdownFilesLocalDataSource {
   AgnosticOSFilesLocalDataSource({required this.pickFiles});
 
   @override
-  Future<File?> getFile() async {
+  Future<NoteEntity?> getFile() async {
     FilePickerResult? result = await pickFiles();
-
-    return result != null ? File(result.files.first.path!) : null;
+    if (result != null) {
+      return NoteEntity(
+        fileName: _getFileName(result.files.first.path!),
+        fileContents: utf8.decode(result.files.first.bytes!),
+      );
+    } else {
+      return null;
+    }
   }
+
+  String _getFileName(String path) => path.split('/').last;
 }
