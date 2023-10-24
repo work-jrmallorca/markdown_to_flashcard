@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/data/data_sources/android_os_files_local_data_source.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/data/data_sources/markdown_files_local_data_source.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/read_markdown_file/data/data_sources/agnostic_os_files_local_data_source.dart';
@@ -46,11 +49,7 @@ Future<void> init() async {
     ),
   );
 
-  sl.registerLazySingleton(
-    () => AgnosticOSFilesLocalDataSource(
-      pickFiles: sl(),
-    ),
-  );
+  sl.registerLazySingleton(() => platformDataSource());
 
   sl.registerLazySingleton(() => PickFilesProxy());
 
@@ -78,4 +77,13 @@ Future<void> init() async {
   // External
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
+}
+
+MarkdownFilesLocalDataSource platformDataSource() {
+  switch (defaultTargetPlatform) {
+    case TargetPlatform.android:
+      return AndroidOSFilesLocalDataSource(methodChannel: sl());
+    default:
+      return AgnosticOSFilesLocalDataSource(pickFiles: sl());
+  }
 }
