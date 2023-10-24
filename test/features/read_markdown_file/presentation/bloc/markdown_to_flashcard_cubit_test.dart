@@ -18,7 +18,7 @@ class MockAddQuestionAnswerPairsInNoteToAnkidroidUseCase extends Mock
 
 void main() {
   const Note emptyNote = Note(
-    fileName: 'Test file name',
+    title: 'Test file name',
     deck: 'Test deck name',
     tags: [],
     questionAnswerPairs: [],

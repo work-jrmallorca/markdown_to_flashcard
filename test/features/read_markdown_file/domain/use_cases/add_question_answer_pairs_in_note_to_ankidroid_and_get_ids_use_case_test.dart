@@ -11,14 +11,14 @@ class MockMethodChannel extends Mock implements MethodChannel {}
 
 void main() {
   const Note emptyNote = Note(
-    fileName: 'Test file name',
+    title: 'Test file name',
     deck: 'Test deck name',
     tags: [],
     questionAnswerPairs: [],
   );
 
   const Note noteWithOneQAPair = Note(
-    fileName: 'Test file name',
+    title: 'Test file name',
     deck: 'Test deck name',
     tags: [],
     questionAnswerPairs: [
@@ -27,7 +27,7 @@ void main() {
   );
 
   const Note noteWithMultipleQAPairs = Note(
-    fileName: 'Test file name',
+    title: 'Test file name',
     deck: 'Test deck name',
     tags: [],
     questionAnswerPairs: [

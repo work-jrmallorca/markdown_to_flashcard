@@ -13,18 +13,20 @@ class MockMarkdownFilePickerLocalDataSource extends Mock
     implements MarkdownFilesLocalDataSource {}
 
 void main() {
-  final File noDeckNoTagsNoQaFile =
-      File('test/fixtures/file_with__deck_no-tags_no-qa.md');
-  final File deckNoTagsNoQaFile =
-      File('test/fixtures/file_with__deck_no-tags_no-qa.md');
-  final File deckOneTagNoQaFile =
-      File('test/fixtures/file_with__deck_one-tag_no-qa.md');
-  final File deckMultipleTagsNoQaFile =
-      File('test/fixtures/file_with__deck_multiple-tags_no-qa.md');
-  final File deckMultipleTagsOneQaFile =
-      File('test/fixtures/file_with__deck_multiple-tags_one-qa.md');
-  final File deckMultipleTagsMultipleQaFile =
-      File('test/fixtures/file_with__deck_multiple-tags_multiple-qa.md');
+  final File noDeckNoTagsNoTitleNoQaFile =
+      File('test/fixtures/file_with__no-deck_no-tags_no-title_no-qa.md');
+  final File deckNoTagsNoTitleNoQaFile =
+      File('test/fixtures/file_with__deck_no-tags_no-title_no-qa.md');
+  final File deckOneTagNoTitleNoQaFile =
+      File('test/fixtures/file_with__deck_one-tag_no-title_no-qa.md');
+  final File deckMultipleTagsNoTitleNoQaFile =
+      File('test/fixtures/file_with__deck_multiple-tags_no-title_no-qa.md');
+  final File deckMultipleTagsTitleNoQaFile =
+      File('test/fixtures/file_with__deck_multiple-tags_title_no-qa.md');
+  final File deckMultipleTagsTitleOneQaFile =
+      File('test/fixtures/file_with__deck_multiple-tags_title_one-qa.md');
+  final File deckMultipleTagsTitleMultipleQaFile =
+      File('test/fixtures/file_with__deck_multiple-tags_title_multiple-qa.md');
 
   late MockMarkdownFilePickerLocalDataSource mock;
   late NoteRepository repository;
@@ -54,9 +56,8 @@ void main() {
         "WHEN 'call()' is called from the use case, "
         "THEN call 'getMarkdownFile()' once from the repository, "
         'AND throw a ConversionException', () async {
-      File file = noDeckNoTagsNoQaFile;
+      File file = noDeckNoTagsNoTitleNoQaFile;
       NoteEntity entity = NoteEntity(
-        fileName: file.path.split('/').last,
         fileContents: file.readAsStringSync(),
       );
       when(() => mock.getFile()).thenAnswer((_) async => entity);
@@ -72,9 +73,8 @@ void main() {
         "WHEN 'call()' is called from the use case, "
         "THEN call 'getMarkdownFile()' once from the repository, "
         'AND throw a ConversionException', () async {
-      File file = deckNoTagsNoQaFile;
+      File file = deckNoTagsNoTitleNoQaFile;
       NoteEntity entity = NoteEntity(
-        fileName: file.path.split('/').last,
         fileContents: file.readAsStringSync(),
       );
       when(() => mock.getFile()).thenAnswer((_) async => entity);
@@ -90,9 +90,8 @@ void main() {
         "WHEN 'call()' is called from the use case, "
         "THEN call 'getMarkdownFile()' once from the repository, "
         'AND throw a ConversionException', () async {
-      File file = deckOneTagNoQaFile;
+      File file = deckOneTagNoTitleNoQaFile;
       NoteEntity entity = NoteEntity(
-        fileName: file.path.split('/').last,
         fileContents: file.readAsStringSync(),
       );
       when(() => mock.getFile()).thenAnswer((_) async => entity);
@@ -108,9 +107,25 @@ void main() {
         "WHEN 'call()' is called from the use case, "
         "THEN call 'getMarkdownFile()' once from the repository, "
         "AND return 'Note'", () async {
-      File file = deckMultipleTagsNoQaFile;
+      File file = deckMultipleTagsNoTitleNoQaFile;
       NoteEntity entity = NoteEntity(
-        fileName: file.path.split('/').last,
+        fileContents: file.readAsStringSync(),
+      );
+      when(() => mock.getFile()).thenAnswer((_) async => entity);
+
+      final Future<Note?> Function() result = repository.getNote;
+
+      expect(() async => await result(), throwsA(isA<ConversionException>()));
+      verify(() => mock.getFile()).called(1);
+    });
+
+    test(
+        'GIVEN the user selects a correctly formatted Markdown file with a deck name and multiple tags, '
+        "WHEN 'call()' is called from the use case, "
+        "THEN call 'getMarkdownFile()' once from the repository, "
+        "AND return 'Note'", () async {
+      File file = deckMultipleTagsTitleNoQaFile;
+      NoteEntity entity = NoteEntity(
         fileContents: file.readAsStringSync(),
       );
       when(() => mock.getFile()).thenAnswer((_) async => entity);
@@ -126,16 +141,15 @@ void main() {
         "WHEN 'call()' is called from the use case, "
         "THEN call 'getMarkdownFile()' once from the repository, "
         "AND return 'Note'", () async {
-      File file = deckMultipleTagsOneQaFile;
+      File file = deckMultipleTagsTitleOneQaFile;
       NoteEntity entity = NoteEntity(
-        fileName: file.path.split('/').last,
         fileContents: file.readAsStringSync(),
       );
-      Note expected = Note(
-        fileName: file.path.split('/').last,
+      Note expected = const Note(
+        title: 'Title',
         deck: 'test deck',
-        tags: const ['test-tag1', 'test-tag2', 'test-tag3'],
-        questionAnswerPairs: const [
+        tags: ['test-tag1', 'test-tag2', 'test-tag3'],
+        questionAnswerPairs: [
           QuestionAnswerPair(
             question: 'Test question 1',
             answer: 'Test answer 1',
@@ -155,16 +169,15 @@ void main() {
         "WHEN 'call()' is called from the use case, "
         "THEN call 'getMarkdownFile()' once from the repository, "
         "AND return 'Note'", () async {
-      File file = deckMultipleTagsMultipleQaFile;
+      File file = deckMultipleTagsTitleMultipleQaFile;
       NoteEntity entity = NoteEntity(
-        fileName: file.path.split('/').last,
         fileContents: file.readAsStringSync(),
       );
-      Note expected = Note(
-        fileName: file.path.split('/').last,
+      Note expected = const Note(
+        title: 'Title',
         deck: 'test deck',
-        tags: const ['test-tag1', 'test-tag2', 'test-tag3'],
-        questionAnswerPairs: const [
+        tags: ['test-tag1', 'test-tag2', 'test-tag3'],
+        questionAnswerPairs: [
           QuestionAnswerPair(
             question: 'Test question 1',
             answer: 'Test answer 1',

@@ -3,7 +3,6 @@ package app.jrmallorca.markdown_to_flashcard
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import androidx.core.net.toFile
 import androidx.core.net.toUri
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -70,6 +69,7 @@ class MainActivity : FlutterActivity() {
                     var line: String? = reader.readLine()
                     while (line != null) {
                         stringBuilder.append(line)
+                        stringBuilder.append('\n')
                         line = reader.readLine()
                     }
                 }
@@ -78,7 +78,6 @@ class MainActivity : FlutterActivity() {
             return pendingResult!!.success(
                 mapOf(
                     "uri" to uri.toString(),
-                    "fileName" to uri.toFile().name,
                     "fileContents" to stringBuilder.toString()
                 )
             )

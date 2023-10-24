@@ -4,14 +4,14 @@ import 'question_answer_pair.dart';
 
 class Note extends Equatable {
   final String? uri;
-  final String fileName;
+  final String title;
   final String deck;
   final List<String> tags;
   final List<QuestionAnswerPair> questionAnswerPairs;
 
   const Note({
     this.uri,
-    required this.fileName,
+    required this.title,
     required this.deck,
     required this.tags,
     required this.questionAnswerPairs,
@@ -19,14 +19,14 @@ class Note extends Equatable {
 
   Note copyWith({
     String? uri,
-    String? fileName,
+    String? title,
     String? deck,
     List<String>? tags,
     List<QuestionAnswerPair>? questionAnswerPairs,
   }) =>
       Note(
         uri: uri ?? this.uri,
-        fileName: fileName ?? this.fileName,
+        title: title ?? this.title,
         deck: deck ?? this.deck,
         tags: tags ?? this.tags,
         questionAnswerPairs: questionAnswerPairs ?? this.questionAnswerPairs,
@@ -35,7 +35,7 @@ class Note extends Equatable {
   @override
   List<Object?> get props => [
         uri,
-        fileName,
+        title,
         deck,
         tags,
         questionAnswerPairs,

@@ -24,13 +24,10 @@ class AgnosticOSFilesLocalDataSource implements MarkdownFilesLocalDataSource {
     FilePickerResult? result = await pickFiles();
     if (result != null) {
       return NoteEntity(
-        fileName: _getFileName(result.files.first.path!),
         fileContents: utf8.decode(result.files.first.bytes!),
       );
     } else {
       return null;
     }
   }
-
-  String _getFileName(String path) => path.split('/').last;
 }

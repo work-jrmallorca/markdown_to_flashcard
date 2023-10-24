@@ -10,15 +10,17 @@ class AndroidOSFilesLocalDataSource implements MarkdownFilesLocalDataSource {
 
   @override
   Future<NoteEntity?> getFile() async {
-    Map<String, String>? file =
-        await methodChannel.invokeMethod<Map<String, String>>('pickFile');
+    Map? result = await methodChannel.invokeMethod('pickFile');
 
-    return file != null
-        ? NoteEntity(
-            uri: file['uri'],
-            fileName: file['fileName']!,
-            fileContents: file['fileContents']!,
-          )
-        : null;
+    if (result != null) {
+      Map<String, String> file = Map.from(result);
+
+      return NoteEntity(
+        uri: file['uri'],
+        fileContents: file['fileContents']!,
+      );
+    } else {
+      return null;
+    }
   }
 }

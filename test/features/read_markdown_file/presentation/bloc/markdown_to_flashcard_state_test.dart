@@ -12,7 +12,7 @@ void main() {
     const MarkdownToFlashcardState initialState = MarkdownToFlashcardState();
     final Exception exception = Exception('Test');
     const Note note = Note(
-      fileName: 'Test file name',
+      title: 'Test file name',
       deck: 'Test deck name',
       tags: [],
       questionAnswerPairs: [],

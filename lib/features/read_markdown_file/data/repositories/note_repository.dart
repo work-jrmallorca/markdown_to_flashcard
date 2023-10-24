@@ -16,12 +16,22 @@ class NoteRepository {
     return entity != null
         ? Note(
             uri: entity.uri,
-            fileName: entity.fileName,
+            title: _getTitle(entity.fileContents),
             deck: _getDeck(entity.fileContents),
             tags: _getTags(entity.fileContents),
             questionAnswerPairs: _getQuestionAnswerPairs(entity.fileContents),
           )
         : null;
+  }
+
+  String _getTitle(String fileContents) {
+    RegExp regex = RegExp(r'# ([^\n]+)');
+
+    return regex.firstMatch(fileContents)?.group(1) ??
+        (throw ConversionException(
+          message:
+              'Unable to detect title in the file. Please include or format title into "# <some_title_name>"',
+        ));
   }
 
   String _getDeck(String fileContents) {
@@ -30,7 +40,7 @@ class NoteRepository {
     return regex.firstMatch(fileContents)?.group(1) ??
         (throw ConversionException(
           message:
-              'Unable to detect deck in the file. Please format deck into "deck: <some_deck_name>"',
+              'Unable to detect deck in the file. Please include or format deck into "deck: <some_deck_name>"',
         ));
   }
 

@@ -31,8 +31,7 @@ void main() {
         size: 0,
         bytes: Uint8List.fromList(utf8.encode(fileContents)));
     FilePickerResult filePickerResult = FilePickerResult([platformFile]);
-    const NoteEntity expected =
-        NoteEntity(fileName: fileName, fileContents: fileContents);
+    const NoteEntity expected = NoteEntity(fileContents: fileContents);
 
     when(() => mock()).thenAnswer((_) async => filePickerResult);
 

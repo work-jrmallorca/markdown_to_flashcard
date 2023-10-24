@@ -19,7 +19,7 @@ class AddQuestionAnswerPairsInNoteToAnkidroidAndGetIDsUseCase {
           'deck': note.deck,
           'question': qaPair.question,
           'answer': qaPair.answer,
-          'source': note.fileName,
+          'source': note.title,
           'tags': note.tags,
         },
       );
