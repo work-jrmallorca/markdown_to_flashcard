@@ -2,13 +2,23 @@ import 'package:markdown/markdown.dart';
 
 import '../entities/note.dart';
 
+class MarkdownToHTMLProxy {
+  String call(String markdown) => markdownToHtml(markdown);
+}
+
 class ConvertMarkdownToHTMLUseCase {
-  Note call(Note note) => note.copyWith(
-        questionAnswerPairs: note.questionAnswerPairs
-            .map((qaPair) => qaPair.copyWith(
-                  question: markdownToHtml(qaPair.question),
-                  answer: markdownToHtml(qaPair.answer),
-                ))
-            .toList(),
-      );
+  final MarkdownToHTMLProxy markdownToHTMLProxy;
+
+  ConvertMarkdownToHTMLUseCase({required this.markdownToHTMLProxy});
+
+  Note call(Note note) {
+    RegExp regex = RegExp(r'.* :: .*');
+
+    String newFileContents = note.fileContents.splitMapJoin(
+      regex,
+      onMatch: (match) => markdownToHTMLProxy(match.group(0)!),
+    );
+
+    return note.copyWith(fileContents: newFileContents);
+  }
 }
