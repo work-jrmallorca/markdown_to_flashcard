@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 
-import '../entities/note_entity.dart';
+import '../../domain/entities/note.dart';
 import 'markdown_files_local_data_source.dart';
 
 class AndroidOSFilesLocalDataSource implements MarkdownFilesLocalDataSource {
@@ -9,18 +9,29 @@ class AndroidOSFilesLocalDataSource implements MarkdownFilesLocalDataSource {
   AndroidOSFilesLocalDataSource({required this.methodChannel});
 
   @override
-  Future<NoteEntity?> getFile() async {
+  Future<Note?> getFile() async {
     Map? result = await methodChannel.invokeMethod('pickFile');
 
     if (result != null) {
       Map<String, String> file = Map.from(result);
 
-      return NoteEntity(
+      return Note(
         uri: file['uri'],
         fileContents: file['fileContents']!,
       );
     } else {
       return null;
     }
+  }
+
+  @override
+  Future<void> updateFile(Note note) async {
+    await methodChannel.invokeMethod(
+      'writeFile',
+      <String, dynamic>{
+        'uri': note.uri,
+        'fileContents': note.fileContents,
+      },
+    );
   }
 }

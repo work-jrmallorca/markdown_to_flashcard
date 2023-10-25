@@ -35,7 +35,7 @@ class MainActivity : FlutterActivity() {
                 "requestPermissions" -> requestPermissions()
                 "addAnkiNote" -> addAnkiNote(call)
                 "addAnkiNotes" -> addAnkiNotes(call)
-                "writeFlashcardIDsInFile" -> writeFlashcardIDsInFile(call)
+                "writeFile" -> writeFile(call)
                 else -> result.notImplemented()
             }
         }
@@ -46,7 +46,7 @@ class MainActivity : FlutterActivity() {
     ) {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                GET_MARKDOWN_FILE -> getNoteEntity(resultData)
+                GET_MARKDOWN_FILE -> readFile(resultData)
             }
         }
     }
@@ -60,7 +60,7 @@ class MainActivity : FlutterActivity() {
         startActivityForResult(intent, GET_MARKDOWN_FILE)
     }
 
-    private fun getNoteEntity(resultData: Intent?) {
+    private fun readFile(resultData: Intent?) {
         resultData?.data?.also { uri ->
             val stringBuilder = StringBuilder()
 
@@ -121,11 +121,10 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun writeFlashcardIDsInFile(call: MethodCall) {
+    private fun writeFile(call: MethodCall) {
         val uri: Uri = call.argument<String>("uri")!!.toUri()
         val fileContents: String = call.argument<String>("fileContents")!!
 
-        val stringBuilder = StringBuilder()
         try {
             contentResolver.openFileDescriptor(uri, "w")?.use {
                 FileOutputStream(it.fileDescriptor).use { os ->
@@ -137,6 +136,6 @@ class MainActivity : FlutterActivity() {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        return pendingResult!!.success(stringBuilder.toString())
+        return pendingResult!!.success(true)
     }
 }

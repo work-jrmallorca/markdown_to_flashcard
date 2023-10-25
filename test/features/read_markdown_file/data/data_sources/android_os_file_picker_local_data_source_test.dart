@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/data/data_sources/android_os_files_local_data_source.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/data/entities/note_entity.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/domain/entities/note.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockMethodChannel extends Mock implements MethodChannel {}
@@ -16,36 +16,68 @@ void main() {
     localDataSource = AndroidOSFilesLocalDataSource(methodChannel: mock);
   });
 
-  test(
-      'GIVEN a file is successfully picked, '
-      "WHEN 'call()' is called from the pick files proxy, "
-      "THEN return 'FilePickerResult'", () async {
-    Map<String, String> file = {
-      'uri': 'test uri',
-      'fileContents': 'test fileContents',
-    };
-    NoteEntity expected = NoteEntity(
-      uri: file['uri'],
-      fileContents: file['fileContents']!,
-    );
+  group('getFile', () {
+    test(
+        'GIVEN a file is successfully picked, '
+        "WHEN 'getFile()' is called, "
+        "THEN return 'FilePickerResult'", () async {
+      Map<String, String> file = {
+        'uri': 'test uri',
+        'fileContents': 'test fileContents',
+      };
+      Note expected = Note(
+        uri: file['uri'],
+        fileContents: file['fileContents']!,
+      );
 
-    when(() => mock.invokeMethod<Map>(any())).thenAnswer((_) async => file);
+      when(() => mock.invokeMethod<Map>('pickFile'))
+          .thenAnswer((_) async => file);
 
-    final NoteEntity? result = await localDataSource.getFile();
+      final Note? result = await localDataSource.getFile();
 
-    expect(result, expected);
-    verify(() => mock.invokeMethod<Map>(any())).called(1);
+      expect(result, expected);
+      verify(() => mock.invokeMethod<Map>('pickFile')).called(1);
+    });
+
+    test(
+        'GIVEN the file picker is cancelled, '
+        "WHEN 'getFile()' is called, "
+        "THEN return 'FilePickerResult'", () async {
+      when(() => mock.invokeMethod<Map>('pickFile'))
+          .thenAnswer((_) async => null);
+
+      final Note? result = await localDataSource.getFile();
+
+      verify(() => mock.invokeMethod<Map>('pickFile')).called(1);
+      expect(result, null);
+    });
   });
 
-  test(
-      'GIVEN the file picker is cancelled, '
-      "WHEN 'call()' is called from the pick files proxy, "
-      "THEN return 'FilePickerResult'", () async {
-    when(() => mock.invokeMethod<Map>(any())).thenAnswer((_) async => null);
+  group('updateFile', () {
+    test(
+        'GIVEN a file is being updated, '
+        "WHEN 'updateFile()' is called, "
+        "THEN return 'FilePickerResult'", () async {
+      Map<String, String> file = {
+        'uri': 'test uri',
+        'fileContents': 'test fileContents',
+      };
+      Note note = Note(
+        uri: file['uri'],
+        fileContents: file['fileContents']!,
+      );
 
-    final NoteEntity? result = await localDataSource.getFile();
+      when(() => mock.invokeMethod(
+            'writeFile',
+            <String, dynamic>{
+              'uri': note.uri,
+              'fileContents': note.fileContents,
+            },
+          )).thenAnswer((_) async => file);
 
-    verify(() => mock.invokeMethod<Map>(any())).called(1);
-    expect(result, null);
+      await localDataSource.updateFile(note);
+
+      verify(() => mock.invokeMethod('writeFile', any())).called(1);
+    });
   });
 }

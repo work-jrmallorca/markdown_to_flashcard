@@ -1,6 +1,8 @@
-import 'package:markdown_to_flashcard/features/read_markdown_file/data/entities/note_entity.dart';
+import '../../domain/entities/note.dart';
 
 // The result will be null, if the user aborted the dialog
 abstract class MarkdownFilesLocalDataSource {
-  Future<NoteEntity?> getFile();
+  Future<Note?> getFile();
+
+  Future<void> updateFile(Note note);
 }
