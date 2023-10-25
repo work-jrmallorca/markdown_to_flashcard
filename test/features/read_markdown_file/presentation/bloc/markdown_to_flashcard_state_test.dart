@@ -11,12 +11,7 @@ void main() {
   test('copyWith works', () {
     const MarkdownToFlashcardState initialState = MarkdownToFlashcardState();
     final Exception exception = Exception('Test');
-    const Note note = Note(
-      title: 'Test file name',
-      deck: 'Test deck name',
-      tags: [],
-      questionAnswerPairs: [],
-    );
+    const Note note = Note(fileContents: '');
 
     final state = initialState.copyWith(
       status: GetMarkdownFileStatus.success,

@@ -1,13 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/data/data_sources/android_os_files_local_data_source.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/data/data_sources/markdown_files_local_data_source.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/read_markdown_file/data/data_sources/agnostic_os_files_local_data_source.dart';
+import 'features/read_markdown_file/data/data_sources/android_os_files_local_data_source.dart';
+import 'features/read_markdown_file/data/data_sources/markdown_files_local_data_source.dart';
 import 'features/read_markdown_file/data/repositories/note_repository.dart';
-import 'features/read_markdown_file/domain/use_cases/add_question_answer_pairs_in_note_to_ankidroid_use_case.dart';
+import 'features/read_markdown_file/domain/use_cases/add_flashcard_ids_to_note_use_case.dart';
+import 'features/read_markdown_file/domain/use_cases/add_question_answer_pairs_in_note_to_ankidroid_and_get_ids_use_case.dart';
 import 'features/read_markdown_file/domain/use_cases/convert_markdown_to_html_use_case.dart';
 import 'features/read_markdown_file/domain/use_cases/request_ankidroid_permission_use_case.dart';
 import 'features/read_markdown_file/presentation/bloc/markdown_to_flashcard_cubit.dart';
@@ -21,10 +22,10 @@ Future<void> init() async {
   // Features
   sl.registerFactory(
     () => MarkdownToFlashcardCubit(
-      noteRepository: sl(),
-      convertMarkdownToHTMLUseCase: sl(),
-      addQuestionAnswerPairsInNoteToAnkidroid: sl(),
-    ),
+        noteRepository: sl(),
+        convertMarkdownToHTML: sl(),
+        addQuestionAnswerPairsInNoteToAnkidroidAndGetIDs: sl(),
+        addFlashcardIDsToNote: sl()),
   );
 
   sl.registerLazySingleton(
@@ -34,14 +35,16 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton(
-    () => ConvertMarkdownToHTMLUseCase(),
+    () => ConvertMarkdownToHTMLUseCase(markdownToHTMLProxy: sl()),
   );
 
   sl.registerLazySingleton(
-    () => AddQuestionAnswerPairsInNoteToAnkidroidUseCase(
+    () => AddQuestionAnswerPairsInNoteToAnkidroidAndGetIDsUseCase(
       methodChannel: sl(),
     ),
   );
+
+  sl.registerLazySingleton(() => AddFlashcardIDsToNoteUseCase());
 
   sl.registerLazySingleton(
     () => NoteRepository(
@@ -52,6 +55,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => platformDataSource());
 
   sl.registerLazySingleton(() => PickFilesProxy());
+
+  sl.registerLazySingleton(() => MarkdownToHTMLProxy());
 
   // Theme
   sl.registerFactory(() => ThemeCubit(repository: sl()));
@@ -84,6 +89,6 @@ MarkdownFilesLocalDataSource platformDataSource() {
     case TargetPlatform.android:
       return AndroidOSFilesLocalDataSource(methodChannel: sl());
     default:
-      return AgnosticOSFilesLocalDataSource(pickFiles: sl());
+      return AgnosticOSFilesLocalDataSource(pickFilesProxy: sl());
   }
 }

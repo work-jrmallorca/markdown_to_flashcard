@@ -1,37 +1,43 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/add_flashcard_ids_to_note_use_case.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/add_question_answer_pairs_in_note_to_ankidroid_and_get_ids_use_case.dart';
 
 import '../../data/repositories/note_repository.dart';
 import '../../domain/entities/note.dart';
-import '../../domain/use_cases/add_question_answer_pairs_in_note_to_ankidroid_use_case.dart';
 import '../../domain/use_cases/convert_markdown_to_html_use_case.dart';
 import 'markdown_to_flashcard_state.dart';
 
 class MarkdownToFlashcardCubit extends Cubit<MarkdownToFlashcardState> {
   final NoteRepository noteRepository;
-  final ConvertMarkdownToHTMLUseCase convertMarkdownToHTMLUseCase;
-  final AddQuestionAnswerPairsInNoteToAnkidroidUseCase
-      addQuestionAnswerPairsInNoteToAnkidroid;
+  final ConvertMarkdownToHTMLUseCase convertMarkdownToHTML;
+  final AddQuestionAnswerPairsInNoteToAnkidroidAndGetIDsUseCase
+      addQuestionAnswerPairsInNoteToAnkidroidAndGetIDs;
+  final AddFlashcardIDsToNoteUseCase addFlashcardIDsToNote;
 
   MarkdownToFlashcardCubit({
     required this.noteRepository,
-    required this.convertMarkdownToHTMLUseCase,
-    required this.addQuestionAnswerPairsInNoteToAnkidroid,
+    required this.convertMarkdownToHTML,
+    required this.addQuestionAnswerPairsInNoteToAnkidroidAndGetIDs,
+    required this.addFlashcardIDsToNote,
   }) : super(const MarkdownToFlashcardState());
 
   Future<void> getMarkdownFile() async {
     emit(state.copyWith(status: GetMarkdownFileStatus.loading));
 
     try {
-      Note? note = await noteRepository.getNote();
+      Note? markdownNote = await noteRepository.getNote();
 
-      if (note != null) {
-        note = convertMarkdownToHTMLUseCase(note);
-        await addQuestionAnswerPairsInNoteToAnkidroid(note);
+      if (markdownNote != null) {
+        Note htmlNote = convertMarkdownToHTML(markdownNote);
+        List<int> ids =
+            await addQuestionAnswerPairsInNoteToAnkidroidAndGetIDs(htmlNote);
+        markdownNote = addFlashcardIDsToNote(markdownNote, ids);
+        noteRepository.updateNote(markdownNote);
 
         emit(
           state.copyWith(
             status: GetMarkdownFileStatus.success,
-            note: note,
+            note: markdownNote,
           ),
         );
       } else {
