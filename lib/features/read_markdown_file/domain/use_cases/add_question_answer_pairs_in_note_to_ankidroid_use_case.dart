@@ -14,7 +14,7 @@ class AddQuestionAnswerPairsInNoteToAnkidroidUseCase {
       List<List<String>> tagsList = [];
 
       for (QuestionAnswerPair qaPair in note.questionAnswerPairs) {
-        fieldsList.add([qaPair.question, qaPair.answer, note.fileName]);
+        fieldsList.add([qaPair.question, qaPair.answer, note.title]);
         tagsList.add(note.tags);
       }
 

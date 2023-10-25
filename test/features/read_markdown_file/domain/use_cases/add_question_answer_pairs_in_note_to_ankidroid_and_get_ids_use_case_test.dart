@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:markdown_to_flashcard/core/errors/exception.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/entities/note.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/add_question_answer_pairs_in_note_to_ankidroid_use_case.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/add_question_answer_pairs_in_note_to_ankidroid_and_get_ids_use_case.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockMethodChannel extends Mock implements MethodChannel {}
@@ -23,12 +23,12 @@ void main() {
   );
 
   late MockMethodChannel mock;
-  late AddQuestionAnswerPairsInNoteToAnkidroidUseCase useCase;
+  late AddQuestionAnswerPairsInNoteToAnkidroidAndGetIDsUseCase useCase;
 
   setUp(() {
     mock = MockMethodChannel();
-    useCase =
-        AddQuestionAnswerPairsInNoteToAnkidroidUseCase(methodChannel: mock);
+    useCase = AddQuestionAnswerPairsInNoteToAnkidroidAndGetIDsUseCase(
+        methodChannel: mock);
   });
 
   group('call()', () {
@@ -36,7 +36,7 @@ void main() {
         'GIVEN a note has no question-answer pairs, '
         "WHEN 'call()' is called from the use case, "
         "THEN don't call 'invokeMethod()' from the method channel, "
-        'AND throw an exception.', () async {
+        'AND return an empty list.', () async {
       Note note = emptyNote;
 
       final Future<void> Function(Note note) result = useCase.call;
@@ -57,7 +57,7 @@ void main() {
       when(() => mock.invokeMethod(any(), any()))
           .thenThrow(PlatformException(code: ''));
 
-      final Future<void> Function(Note note) result = useCase.call;
+      final Future<List<int>> Function(Note note) result = useCase.call;
 
       expect(
         () async => await result(note),
@@ -69,15 +69,16 @@ void main() {
     test(
         'GIVEN a note has multiple question-answer pairs, '
         "WHEN 'call()' is called from the use case, "
-        "THEN call 'invokeMethod()' multiple times from the method channel, ",
-        () async {
+        "THEN call 'invokeMethod()' multiple times from the method channel, "
+        'AND return a list with multiple note IDs.', () async {
       Note note = noteWithMultipleQAPairs;
       when(() => mock.invokeMethod(any(), any()))
           .thenAnswer((_) async => Random().nextInt(10));
 
-      await useCase(note);
+      final List<int> result = await useCase(note);
 
-      verify(() => mock.invokeMethod(any(), any())).called(1);
+      expect(result.length, note.questionAnswerPairs.length);
+      verify(() => mock.invokeMethod(any(), any())).called(3);
     });
   });
 }

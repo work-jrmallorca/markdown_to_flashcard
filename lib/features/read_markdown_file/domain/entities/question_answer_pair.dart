@@ -23,5 +23,5 @@ class QuestionAnswerPair extends Equatable {
       );
 
   @override
-  List<Object?> get props => [question, answer];
+  List<Object?> get props => [id, question, answer];
 }

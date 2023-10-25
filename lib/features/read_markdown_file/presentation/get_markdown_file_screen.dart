@@ -115,7 +115,7 @@ class GetMarkdownFileScreen extends StatelessWidget {
       case GetMarkdownFileStatus.success:
         title = 'Success!';
         description =
-            'Successfully imported from file ${state.note!.fileName}. Import from another file?';
+            'Successfully imported from file ${state.note!.title}. Import from another file?';
       default:
         title = 'Import to Anki';
         description = 'Select a markdown file to import your flashcards from.';

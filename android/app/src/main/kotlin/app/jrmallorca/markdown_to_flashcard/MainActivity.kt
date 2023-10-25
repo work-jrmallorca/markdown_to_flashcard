@@ -1,11 +1,24 @@
 package app.jrmallorca.markdown_to_flashcard
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import androidx.core.net.toUri
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import java.io.BufferedReader
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStreamReader
 
-class MainActivity: FlutterActivity() {
+class MainActivity : FlutterActivity() {
     private val CHANNEL = "app.jrmallorca.markdown_to_flashcard/ankidroid"
+    private val GET_MARKDOWN_FILE = 2
+
+    private var pendingResult: MethodChannel.Result? = null
 
     private lateinit var anki: Anki
 
@@ -13,33 +26,116 @@ class MainActivity: FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         anki = Anki(this)
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
-                call, result ->
-
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger, CHANNEL
+        ).setMethodCallHandler { call, result ->
+            pendingResult = result
             when (call.method) {
-                "requestPermissions" -> {
-                    if (anki.shouldRequestPermission()) {
-                        anki.requestPermission(this, 0)
-                    }
-                    result.success(true)
-                }
-                "addAnkiNotes" -> {
-                    val notesAdded: Int = anki.addAnkiNotes(
-                        call.argument<String>("deck")!!,
-                        call.argument<List<List<String>>>("fields")!!,
-                        call.argument<List<List<String>>>("tags")!!
-                    )
-
-                    if (notesAdded != 0) {
-                        result.success(notesAdded)
-                    } else {
-                        result.error("FAILURE", "Failed to add Anki notes", null)
-                    }
-                }
-                else -> {
-                    result.notImplemented()
-                }
+                "pickFile" -> pickFileFromFilePicker()
+                "requestPermissions" -> requestPermissions()
+                "addAnkiNote" -> addAnkiNote(call)
+                "addAnkiNotes" -> addAnkiNotes(call)
+                "writeFile" -> writeFile(call)
+                else -> result.notImplemented()
             }
         }
+    }
+
+    override fun onActivityResult(
+        requestCode: Int, resultCode: Int, resultData: Intent?
+    ) {
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                GET_MARKDOWN_FILE -> readFile(resultData)
+            }
+        }
+    }
+
+    private fun pickFileFromFilePicker() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "text/markdown"
+        }
+
+        startActivityForResult(intent, GET_MARKDOWN_FILE)
+    }
+
+    private fun readFile(resultData: Intent?) {
+        resultData?.data?.also { uri ->
+            val stringBuilder = StringBuilder()
+
+            contentResolver.openInputStream(uri)?.use { inputStream ->
+                BufferedReader(InputStreamReader(inputStream)).use { reader ->
+                    var line: String? = reader.readLine()
+                    while (line != null) {
+                        stringBuilder.append(line)
+                        stringBuilder.append('\n')
+                        line = reader.readLine()
+                    }
+                }
+            }
+
+            return pendingResult!!.success(
+                mapOf(
+                    "uri" to uri.toString(),
+                    "fileContents" to stringBuilder.toString()
+                )
+            )
+        }
+    }
+
+    private fun requestPermissions() {
+        if (anki.shouldRequestPermission()) {
+            anki.requestPermission(this, 0)
+        }
+        pendingResult!!.success(true)
+    }
+
+    private fun addAnkiNote(call: MethodCall) {
+        val noteId: Long? = anki.addAnkiNote(
+            call.argument<String>("deck")!!,
+            call.argument<String>("question")!!,
+            call.argument<String>("answer")!!,
+            call.argument<String>("source")!!,
+            call.argument<List<String>>("tags")!!.toSet()
+        )
+
+        if (noteId != null) {
+            pendingResult!!.success(noteId)
+        } else {
+            pendingResult!!.error("FAILURE", "Failed to add Anki notes", null)
+        }
+    }
+
+    private fun addAnkiNotes(call: MethodCall) {
+        val notesAdded: Int = anki.addAnkiNotes(
+            call.argument<String>("deck")!!,
+            call.argument<List<List<String>>>("fields")!!,
+            call.argument<List<List<String>>>("tags")!!
+        )
+
+        if (notesAdded != 0) {
+            pendingResult!!.success(notesAdded)
+        } else {
+            pendingResult!!.error("FAILURE", "Failed to add Anki notes", null)
+        }
+    }
+
+    private fun writeFile(call: MethodCall) {
+        val uri: Uri = call.argument<String>("uri")!!.toUri()
+        val fileContents: String = call.argument<String>("fileContents")!!
+
+        try {
+            contentResolver.openFileDescriptor(uri, "w")?.use {
+                FileOutputStream(it.fileDescriptor).use { os ->
+                    os.write(fileContents.toByteArray())
+                }
+            }
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return pendingResult!!.success(true)
     }
 }
