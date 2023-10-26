@@ -16,7 +16,18 @@ class ConvertMarkdownToHTMLUseCase {
 
     String newFileContents = note.fileContents.splitMapJoin(
       regex,
-      onMatch: (match) => markdownToHTMLProxy(match.group(0)!),
+      onMatch: (match) {
+        String flashcard = match.group(0)!;
+        RegExp regex = RegExp(r'^(.*?)(?:\^(\d+))?$');
+
+        String qaPair = regex.firstMatch(flashcard)!.group(1)!;
+        String? id = regex.firstMatch(flashcard)?.group(2);
+
+        String idWithCaret = id != null ? '^$id' : '';
+
+        return '${markdownToHTMLProxy(qaPair)}$idWithCaret'
+            .replaceAll('\n', '');
+      },
     );
 
     return note.copyWith(fileContents: newFileContents);
