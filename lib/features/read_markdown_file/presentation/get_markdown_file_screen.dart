@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:markdown_to_flashcard/features/theme/presentation/widgets/cycle_theme_button.dart';
-import 'package:shimmer_animation/shimmer_animation.dart';
 
 import 'bloc/markdown_to_flashcard_cubit.dart';
 import 'bloc/markdown_to_flashcard_state.dart';
@@ -18,12 +17,10 @@ class GetMarkdownFileScreen extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: ClipRRect(
         borderRadius: BorderRadius.circular(32),
-        child: Shimmer(
-          child: FloatingActionButton.extended(
-            label: const Text('Select a Markdown File'),
-            onPressed: () =>
-                context.read<MarkdownToFlashcardCubit>().getMarkdownFile(),
-          ),
+        child: FloatingActionButton.extended(
+          label: const Text('Select a Markdown File'),
+          onPressed: () =>
+              context.read<MarkdownToFlashcardCubit>().getMarkdownFile(),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
@@ -80,13 +77,11 @@ class GetMarkdownFileScreen extends StatelessWidget {
   Widget _buildImage(BuildContext context, MarkdownToFlashcardState state) {
     switch (state.status) {
       case GetMarkdownFileStatus.success:
-        return Center(
-          child: Shimmer(
-            child: const Icon(
-              Icons.check_circle_outline_rounded,
-              size: 200.0,
-              color: Colors.green,
-            ),
+        return const Center(
+          child: Icon(
+            Icons.check_circle_outline_rounded,
+            size: 200.0,
+            color: Colors.green,
           ),
         );
       default:
