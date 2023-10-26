@@ -128,7 +128,7 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun updateAnkiFlashcard(call: MethodCall) {
-        val id: Long = call.argument<Long>("flashcardID")!!
+        val id: Long = call.argument<Long>("id")!!
         val question: String = call.argument<String>("question")!!
         val answer: String = call.argument<String>("answer")!!
         val source: String = call.argument<String>("source")!!

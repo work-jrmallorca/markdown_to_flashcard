@@ -8,8 +8,8 @@ import 'features/read_markdown_file/data/data_sources/android_os_files_local_dat
 import 'features/read_markdown_file/data/data_sources/markdown_files_local_data_source.dart';
 import 'features/read_markdown_file/data/repositories/note_repository.dart';
 import 'features/read_markdown_file/domain/use_cases/add_flashcard_ids_to_note_use_case.dart';
-import 'features/read_markdown_file/domain/use_cases/add_question_answer_pairs_in_note_to_ankidroid_and_get_ids_use_case.dart';
 import 'features/read_markdown_file/domain/use_cases/convert_markdown_to_html_use_case.dart';
+import 'features/read_markdown_file/domain/use_cases/create_or_update_flashcards_in_note_to_ankidroid_use_case.dart';
 import 'features/read_markdown_file/domain/use_cases/request_ankidroid_permission_use_case.dart';
 import 'features/read_markdown_file/presentation/bloc/markdown_to_flashcard_cubit.dart';
 import 'features/theme/data/data_sources/theme_local_data_source.dart';
@@ -39,7 +39,7 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton(
-    () => AddQuestionAnswerPairsInNoteToAnkidroidAndGetIDsUseCase(
+    () => CreateOrUpdateFlashcardsInNoteToAnkidroidUseCase(
       methodChannel: sl(),
     ),
   );
