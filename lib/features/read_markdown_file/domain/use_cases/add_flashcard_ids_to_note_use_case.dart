@@ -2,7 +2,7 @@ import '../entities/note.dart';
 
 class AddFlashcardIDsToNoteUseCase {
   Note call(Note note, List<int> ids) {
-    RegExp regex = RegExp(r'.* :: .*');
+    RegExp regex = RegExp(r'[^\n\r^]+ :: [^\n\r^]+(?!.*\^\d+)');
 
     String newFileContents = note.fileContents.splitMapJoin(
       regex,

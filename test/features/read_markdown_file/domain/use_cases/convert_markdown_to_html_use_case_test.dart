@@ -8,32 +8,81 @@ import 'package:mocktail/mocktail.dart';
 class MockMarkdownToHTMLProxy extends Mock implements MarkdownToHTMLProxy {}
 
 void main() {
+  final File deckMultipleTagsTitleOneQaDecoratedFile = File(
+      'test/fixtures/file_with__deck_multiple-tags_title_one-qa_decorated.md');
+  final File deckMultipleTagsTitleOneQaHTMLFile =
+      File('test/fixtures/file_with__deck_multiple-tags_title_one-qa_html.md');
   final File deckMultipleTagsTitleMultipleQaDecoratedFile = File(
       'test/fixtures/file_with__deck_multiple-tags_title_multiple-qa_decorated.md');
   final File deckMultipleTagsTitleMultipleQaHTMLFile = File(
       'test/fixtures/file_with__deck_multiple-tags_title_multiple-qa_html.md');
+  final File deckMultipleTagsTitleMultipleQaWithIDsDecoratedFile = File(
+      'test/fixtures/file_with__deck_multiple-tags_title_multiple-qa-with-ids_decorated.md');
+  final File deckMultipleTagsTitleMultipleQaWithIDsHTMLFile = File(
+      'test/fixtures/file_with__deck_multiple-tags_title_multiple-qa-with-ids_html.md');
 
-  late ConvertMarkdownToHTMLUseCase useCase;
-  late MockMarkdownToHTMLProxy mock;
+  group('GIVEN MarkdownToHTML is mocked', () {
+    late ConvertMarkdownToHTMLUseCase useCase;
+    late MockMarkdownToHTMLProxy mock;
 
-  setUp(() {
-    mock = MockMarkdownToHTMLProxy();
-    useCase = ConvertMarkdownToHTMLUseCase(markdownToHTMLProxy: mock);
+    setUp(() {
+      mock = MockMarkdownToHTMLProxy();
+      useCase = ConvertMarkdownToHTMLUseCase(markdownToHTMLProxy: mock);
+    });
+
+    test(
+        'AND a note with flashcards with no IDs is given, '
+        "WHEN 'call()' is called, "
+        'THEN return the flashcards as HTML', () async {
+      Note original = Note(
+          fileContents:
+              deckMultipleTagsTitleOneQaDecoratedFile.readAsStringSync());
+      Note expected = Note(
+          fileContents: deckMultipleTagsTitleOneQaHTMLFile.readAsStringSync());
+      when(() => mock(any())).thenReturn(
+          '<p>Test <strong>question</strong> :: Test <strong>answer</strong></p>');
+
+      Note result = useCase(original);
+
+      expect(result, expected);
+    });
   });
 
-  group('call()', () {
+  group('GIVEN MarkdownToHTML is not mocked', () {
+    late ConvertMarkdownToHTMLUseCase useCase;
+    late MarkdownToHTMLProxy proxy;
+
+    setUp(() {
+      proxy = MarkdownToHTMLProxy();
+      useCase = ConvertMarkdownToHTMLUseCase(markdownToHTMLProxy: proxy);
+    });
+
     test(
-        'GIVEN a note with question answer pairs with no IDs, '
+        'AND a note with flashcards with no IDs is given, '
         "WHEN 'call()' is called, "
-        'THEN return the note as HTML', () async {
+        'THEN return the flashcards as HTML', () async {
       Note original = Note(
           fileContents:
               deckMultipleTagsTitleMultipleQaDecoratedFile.readAsStringSync());
       Note expected = Note(
           fileContents:
               deckMultipleTagsTitleMultipleQaHTMLFile.readAsStringSync());
-      when(() => mock(any()))
-          .thenReturn('<p>Test <em>question</em> :: Test <em>answer</em></p>');
+
+      Note result = useCase(original);
+
+      expect(result, expected);
+    });
+
+    test(
+        'AND a note with flashcards with IDs is given, '
+        "WHEN 'call()' is called, "
+        'THEN return the flashcards as HTML', () async {
+      Note original = Note(
+          fileContents: deckMultipleTagsTitleMultipleQaWithIDsDecoratedFile
+              .readAsStringSync());
+      Note expected = Note(
+          fileContents: deckMultipleTagsTitleMultipleQaWithIDsHTMLFile
+              .readAsStringSync());
 
       Note result = useCase(original);
 

@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/data/repositories/note_repository.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/entities/note.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/add_flashcard_ids_to_note_use_case.dart';
-import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/add_question_answer_pairs_in_note_to_ankidroid_and_get_ids_use_case.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/convert_markdown_to_html_use_case.dart';
+import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/create_or_update_flashcards_in_note_to_ankidroid_use_case.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/markdown_to_flashcard_cubit.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/bloc/markdown_to_flashcard_state.dart';
 import 'package:mocktail/mocktail.dart';
@@ -15,7 +15,7 @@ class MockConvertMarkdownToHTMLUseCase extends Mock
     implements ConvertMarkdownToHTMLUseCase {}
 
 class MockAddQuestionAnswerPairsInNoteToAnkidroidAndGetIDsUseCase extends Mock
-    implements AddQuestionAnswerPairsInNoteToAnkidroidAndGetIDsUseCase {}
+    implements CreateOrUpdateFlashcardsInNoteToAnkidroidUseCase {}
 
 class MockAddFlashcardIDsToNoteUseCase extends Mock
     implements AddFlashcardIDsToNoteUseCase {}

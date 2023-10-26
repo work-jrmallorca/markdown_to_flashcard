@@ -7,6 +7,8 @@ import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cas
 void main() {
   final File deckMultipleTagsTitleMultipleQaFile =
       File('test/fixtures/file_with__deck_multiple-tags_title_multiple-qa.md');
+  final File deckMultipleTagsTitleMultipleQaWithSomeIdsFile = File(
+      'test/fixtures/file_with__deck_multiple-tags_title_multiple-qa-with-some-ids.md');
   final File deckMultipleTagsTitleMultipleQaWithIdsFile = File(
       'test/fixtures/file_with__deck_multiple-tags_title_multiple-qa-with-ids.md');
 
@@ -28,6 +30,22 @@ void main() {
               deckMultipleTagsTitleMultipleQaWithIdsFile.readAsStringSync());
 
       Note result = useCase(original, [123, 456, 789]);
+
+      expect(result, expected);
+    });
+
+    test(
+        'GIVEN a note with question answer pairs with some IDs, '
+        "WHEN 'call()' is called, "
+        'THEN return the note\'s question answer pairs ', () async {
+      Note original = Note(
+          fileContents: deckMultipleTagsTitleMultipleQaWithSomeIdsFile
+              .readAsStringSync());
+      Note expected = Note(
+          fileContents:
+              deckMultipleTagsTitleMultipleQaWithIdsFile.readAsStringSync());
+
+      Note result = useCase(original, [123, 789]);
 
       expect(result, expected);
     });

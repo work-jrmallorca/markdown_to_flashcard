@@ -33,8 +33,9 @@ class MainActivity : FlutterActivity() {
             when (call.method) {
                 "pickFile" -> pickFileFromFilePicker()
                 "requestPermissions" -> requestPermissions()
-                "addAnkiNote" -> addAnkiNote(call)
-                "addAnkiNotes" -> addAnkiNotes(call)
+                "addAnkiFlashcard" -> addAnkiFlashcard(call)
+                "addAnkiFlashcards" -> addAnkiFlashcards(call)
+                "updateAnkiFlashcard" -> updateAnkiFlashcard(call)
                 "writeFile" -> writeFile(call)
                 else -> result.notImplemented()
             }
@@ -77,8 +78,7 @@ class MainActivity : FlutterActivity() {
 
             return pendingResult!!.success(
                 mapOf(
-                    "uri" to uri.toString(),
-                    "fileContents" to stringBuilder.toString()
+                    "uri" to uri.toString(), "fileContents" to stringBuilder.toString()
                 )
             )
         }
@@ -91,24 +91,30 @@ class MainActivity : FlutterActivity() {
         pendingResult!!.success(true)
     }
 
-    private fun addAnkiNote(call: MethodCall) {
-        val noteId: Long? = anki.addAnkiNote(
-            call.argument<String>("deck")!!,
-            call.argument<String>("question")!!,
-            call.argument<String>("answer")!!,
-            call.argument<String>("source")!!,
-            call.argument<List<String>>("tags")!!.toSet()
+    private fun addAnkiFlashcard(call: MethodCall) {
+        val deck: String = call.argument<String>("deck")!!
+        val question: String = call.argument<String>("question")!!
+        val answer: String = call.argument<String>("answer")!!
+        val source: String = call.argument<String>("source")!!
+        val tags: List<String> = call.argument<List<String>>("tags")!!
+
+        val noteId: Long? = anki.addAnkiFlashcard(
+            deck, question, answer, source, tags
         )
 
         if (noteId != null) {
             pendingResult!!.success(noteId)
         } else {
-            pendingResult!!.error("FAILURE", "Failed to add Anki notes", null)
+            pendingResult!!.error(
+                "FAILURE",
+                "Failed to add Anki flashcard in source \"$source\" and question \"$question\"",
+                null
+            )
         }
     }
 
-    private fun addAnkiNotes(call: MethodCall) {
-        val notesAdded: Int = anki.addAnkiNotes(
+    private fun addAnkiFlashcards(call: MethodCall) {
+        val notesAdded: Int = anki.addAnkiFlashcards(
             call.argument<String>("deck")!!,
             call.argument<List<List<String>>>("fields")!!,
             call.argument<List<List<String>>>("tags")!!
@@ -118,6 +124,28 @@ class MainActivity : FlutterActivity() {
             pendingResult!!.success(notesAdded)
         } else {
             pendingResult!!.error("FAILURE", "Failed to add Anki notes", null)
+        }
+    }
+
+    private fun updateAnkiFlashcard(call: MethodCall) {
+        val id: Long = call.argument<Long>("id")!!
+        val question: String = call.argument<String>("question")!!
+        val answer: String = call.argument<String>("answer")!!
+        val source: String = call.argument<String>("source")!!
+        val tags: List<String> = call.argument<List<String>>("tags")!!
+
+        val isFlashcardUpdated: Boolean = anki.updateAnkiFlashcard(
+            id, question, answer, source, tags
+        )
+
+        if (isFlashcardUpdated) {
+            pendingResult!!.success(isFlashcardUpdated)
+        } else {
+            pendingResult!!.error(
+                "FAILURE",
+                "Failed to update Anki flashcard in source \"$source\" and question \"$question\"",
+                null
+            )
         }
     }
 

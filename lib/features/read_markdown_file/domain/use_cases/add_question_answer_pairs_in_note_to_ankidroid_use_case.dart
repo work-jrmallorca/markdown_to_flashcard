@@ -19,7 +19,7 @@ class AddQuestionAnswerPairsInNoteToAnkidroidUseCase {
       }
 
       await methodChannel.invokeMethod(
-        'addAnkiNotes',
+        'addAnkiFlashcards',
         <String, dynamic>{
           'deck': note.deck,
           'fields': fieldsList,
