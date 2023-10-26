@@ -121,6 +121,28 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    private fun updateAnkiFlashcard(call: MethodCall) {
+        val id: Long = call.argument<Long>("flashcardID")!!
+        val question: String = call.argument<String>("question")!!
+        val answer: String = call.argument<String>("answer")!!
+        val source: String = call.argument<String>("source")!!
+        val tags: List<String> = call.argument<List<String>>("tags")!!
+
+        val isFlashcardUpdated: Boolean = anki.updateAnkiFlashcard(
+            id, question, answer, source, tags
+        )
+
+        if (isFlashcardUpdated) {
+            pendingResult!!.success(isFlashcardUpdated)
+        } else {
+            pendingResult!!.error(
+                "FAILURE",
+                "Failed to update Anki flashcard in source \"$source\" and question \"$question\"",
+                null
+            )
+        }
+    }
+
     private fun writeFile(call: MethodCall) {
         val uri: Uri = call.argument<String>("uri")!!.toUri()
         val fileContents: String = call.argument<String>("fileContents")!!

@@ -91,7 +91,25 @@ class Anki(private val context: Context) {
         return api.addNotes(modelId, getDeckId(deck)!!, fieldsAsArray, tagsAsSet)
     }
 
-    private fun removeDuplicates(modelId: Long, fields: List<List<String>>, tags: List<List<String>>) {
+    fun updateAnkiFlashcard(
+        flashcardId: Long,
+        question: String,
+        answer: String,
+        source: String,
+        tags: List<String>,
+    ): Boolean {
+        val fields = arrayOf(
+            question, answer, source
+        )
+
+        val isTagsUpdated: Boolean = api.updateNoteTags(flashcardId, tags.toSet())
+        val isFieldsUpdated: Boolean = api.updateNoteFields(flashcardId, fields)
+        return isTagsUpdated && isFieldsUpdated
+    }
+
+    private fun removeDuplicates(
+        modelId: Long, fields: List<List<String>>, tags: List<List<String>>
+    ) {
         // Build a list of the duplicate keys (first fields) and find all notes that have a match with each key
         val keys: MutableList<String> = ArrayList(fields.size)
         for (f in fields) {
