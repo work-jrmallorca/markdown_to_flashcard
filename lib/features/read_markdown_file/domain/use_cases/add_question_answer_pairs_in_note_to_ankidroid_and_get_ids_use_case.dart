@@ -14,7 +14,7 @@ class AddQuestionAnswerPairsInNoteToAnkidroidAndGetIDsUseCase {
 
     for (QuestionAnswerPair qaPair in note.questionAnswerPairs) {
       int createdNoteId = await methodChannel.invokeMethod(
-        'addAnkiNote',
+        'addAnkiFlashcard',
         <String, dynamic>{
           'deck': note.deck,
           'question': qaPair.question,
