@@ -45,10 +45,10 @@ class MainActivity : FlutterActivity() {
     override fun onActivityResult(
         requestCode: Int, resultCode: Int, resultData: Intent?
     ) {
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                GET_MARKDOWN_FILE -> readFile(resultData)
-            }
+        if (resultCode == Activity.RESULT_OK && requestCode == GET_MARKDOWN_FILE) {
+            readFile(resultData)
+        } else {
+            pendingResult!!.success(null)
         }
     }
 
