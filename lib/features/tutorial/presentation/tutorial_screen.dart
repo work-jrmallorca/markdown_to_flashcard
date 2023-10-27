@@ -50,11 +50,11 @@ The deck name does not need to be hidden within the YAML metadata, but it must b
   ''';
 
   final String bodyDescription = '''
-This is the body of the Markdown file.
+This is the body of the file. Everything here is optional.
   ''';
 
   final String questionAnswerDescription = '''
-Each question and answer pair is a flashcard that will be imported into anki.
+Each question and answer pair is a flashcard that will be imported into Anki.
 
 Every question and answer must be separated by a double colon (::).
 
