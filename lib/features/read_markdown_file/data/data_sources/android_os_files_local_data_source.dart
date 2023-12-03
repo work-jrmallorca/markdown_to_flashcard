@@ -11,7 +11,8 @@ class AndroidOSFilesLocalDataSource implements MarkdownFilesLocalDataSource {
   @override
   Future<List<Note>> getFiles() async {
     List? result = await methodChannel.invokeMethod('pickFiles');
-    List<Map<String, String>> files = List.from(result!);
+    List<Map<String, String>> files =
+        result!.map((file) => Map<String, String>.from(file)).toList();
     List<Note> notes = [];
 
     for (Map<String, String> file in files) {
