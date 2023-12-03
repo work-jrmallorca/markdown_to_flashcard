@@ -22,21 +22,50 @@ void main() {
   group('getFile', () {
     test(
         'GIVEN a file is successfully picked, '
-        "WHEN 'call()' is called from the pick files proxy, "
-        "THEN return 'FilePickerResult'", () async {
+        "WHEN 'getFiles()' is called, "
+        'THEN return list of notes', () async {
       const fileName = 'test.md';
       const fileContents = 'Test contents';
       final PlatformFile platformFile = PlatformFile(
-          path: 'path/to/$fileName',
           name: fileName,
           size: 0,
           bytes: Uint8List.fromList(utf8.encode(fileContents)));
       FilePickerResult filePickerResult = FilePickerResult([platformFile]);
-      const Note expected = Note(fileContents: fileContents);
+      const List<Note> expected = [
+        Note(fileContents: fileContents),
+      ];
 
       when(() => mock()).thenAnswer((_) async => filePickerResult);
 
-      final Note? result = await localDataSource.getFile();
+      final List<Note> result = await localDataSource.getFiles();
+
+      verify(() => mock()).called(1);
+      expect(result, expected);
+    });
+
+    test(
+        'GIVEN multiple files are successfully picked, '
+        "WHEN 'getFiles()' is called, "
+        'THEN return list of notes', () async {
+      const fileContents = 'Test contents';
+      final PlatformFile platformFile = PlatformFile(
+          name: 'test.md',
+          size: 0,
+          bytes: Uint8List.fromList(utf8.encode(fileContents)));
+      FilePickerResult filePickerResult = FilePickerResult([
+        platformFile,
+        platformFile,
+        platformFile,
+      ]);
+      const List<Note> expected = [
+        Note(fileContents: fileContents),
+        Note(fileContents: fileContents),
+        Note(fileContents: fileContents),
+      ];
+
+      when(() => mock()).thenAnswer((_) async => filePickerResult);
+
+      final List<Note> result = await localDataSource.getFiles();
 
       verify(() => mock()).called(1);
       expect(result, expected);
@@ -46,12 +75,13 @@ void main() {
         'GIVEN the file picker is cancelled, '
         "WHEN 'call()' is called from the pick files proxy, "
         "THEN return 'FilePickerResult'", () async {
+      const List<Note> expected = [];
       when(() => mock()).thenAnswer((_) async => null);
 
-      final Note? result = await localDataSource.getFile();
+      final List<Note> result = await localDataSource.getFiles();
 
       verify(() => mock()).called(1);
-      expect(result, null);
+      expect(result, expected);
     });
   });
 

@@ -10,6 +10,7 @@ class PickFilesProxy {
     return FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['md', 'txt'],
+      allowMultiple: true,
     );
   }
 }
@@ -20,15 +21,17 @@ class AgnosticOSFilesLocalDataSource implements MarkdownFilesLocalDataSource {
   AgnosticOSFilesLocalDataSource({required this.pickFilesProxy});
 
   @override
-  Future<Note?> getFile() async {
-    FilePickerResult? result = await pickFilesProxy();
-    if (result != null) {
-      return Note(
-        fileContents: utf8.decode(result.files.first.bytes!),
-      );
-    } else {
-      return null;
+  Future<List<Note>> getFiles() async {
+    FilePickerResult? platformFiles = await pickFilesProxy();
+    List<Note> notes = [];
+
+    if (platformFiles != null) {
+      for (PlatformFile file in platformFiles.files) {
+        notes.add(Note(fileContents: utf8.decode(file.bytes!)));
+      }
     }
+
+    return notes;
   }
 
   @override
