@@ -20,7 +20,7 @@ class GetMarkdownFileScreen extends StatelessWidget {
         child: FloatingActionButton.extended(
           label: const Text('Select a Markdown File'),
           onPressed: () =>
-              context.read<MarkdownToFlashcardCubit>().getMarkdownFile(),
+              context.read<MarkdownToFlashcardCubit>().getMarkdownFiles(),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
@@ -48,12 +48,12 @@ class GetMarkdownFileScreen extends StatelessWidget {
     return BlocConsumer<MarkdownToFlashcardCubit, MarkdownToFlashcardState>(
       listener: (context, state) {
         switch (state.status) {
-          case GetMarkdownFileStatus.failure:
+          case GetMarkdownFilesStatus.failure:
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('${state.exception}')),
             );
             break;
-          case GetMarkdownFileStatus.cancelled:
+          case GetMarkdownFilesStatus.cancelled:
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('File selection cancelled')),
             );
@@ -62,7 +62,7 @@ class GetMarkdownFileScreen extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        return state.status == GetMarkdownFileStatus.loading
+        return state.status == GetMarkdownFilesStatus.loading
             ? const Center(child: CircularProgressIndicator())
             : Column(
                 children: [
@@ -76,7 +76,7 @@ class GetMarkdownFileScreen extends StatelessWidget {
 
   Widget _buildImage(BuildContext context, MarkdownToFlashcardState state) {
     switch (state.status) {
-      case GetMarkdownFileStatus.success:
+      case GetMarkdownFilesStatus.success:
         return const Center(
           child: Icon(
             Icons.check_circle_outline_rounded,
@@ -104,13 +104,14 @@ class GetMarkdownFileScreen extends StatelessWidget {
     String description;
 
     switch (state.status) {
-      case GetMarkdownFileStatus.loading:
+      case GetMarkdownFilesStatus.loading:
         title = '';
         description = '';
-      case GetMarkdownFileStatus.success:
+      case GetMarkdownFilesStatus.success:
         title = 'Success!';
-        description =
-            'Successfully imported note "${state.note!.title}". Import another?';
+        description = state.notes.length > 1
+            ? 'Successfully imported multiple notes. Import more?'
+            : 'Successfully imported note "${state.notes.first.title}". Import another?';
       default:
         title = 'Import to Anki';
         description =
