@@ -7,10 +7,12 @@ import java.io.InputStream
 import java.util.*
 
 object Utils {
-    fun getAsset(context: Context, assetPath:String): Array<String> {
+    fun getAsset(context: Context, assetPath: String): Array<String> {
         return try {
-            val key: String = FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(assetPath)
-            return context.applicationContext.assets.open(key).use { inputStream -> arrayOf(inputStreamToString(inputStream)) }
+            val key: String =
+                FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(assetPath)
+            return context.applicationContext.assets.open(key)
+                .use { inputStream -> arrayOf(inputStreamToString(inputStream)) }
         } catch (e: IOException) {
             arrayOf("An error occurred when trying to find an asset of path $assetPath")
         }

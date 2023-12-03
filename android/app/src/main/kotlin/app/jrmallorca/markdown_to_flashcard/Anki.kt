@@ -7,8 +7,8 @@ import android.os.Build
 import android.util.SparseArray
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.ichi2.anki.FlashCardsContract.READ_WRITE_PERMISSION
 import com.ichi2.anki.api.AddContentApi
-import com.ichi2.anki.api.AddContentApi.READ_WRITE_PERMISSION
 import com.ichi2.anki.api.NoteInfo
 
 
@@ -119,13 +119,13 @@ class Anki(private val context: Context) {
             keys.add(f[0])
         }
 
-        val duplicateNotes: SparseArray<List<NoteInfo>> = api.findDuplicateNotes(modelId, keys)
+        val duplicateNotes: SparseArray<MutableList<NoteInfo?>>? = api.findDuplicateNotes(modelId, keys)
 
         // Do some sanity checks
         if (tags.size != fields.size) {
             throw IllegalStateException("List of tags must be the same length as the list of fields")
         }
-        if (duplicateNotes.size() == 0 || fields.isEmpty() || tags.isEmpty()) {
+        if (duplicateNotes == null || duplicateNotes.size() == 0 || fields.isEmpty() || tags.isEmpty()) {
             return
         }
         if (duplicateNotes.keyAt(duplicateNotes.size() - 1) >= fields.size) {
