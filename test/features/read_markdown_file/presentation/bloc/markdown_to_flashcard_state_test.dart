@@ -5,25 +5,25 @@ import 'package:markdown_to_flashcard/features/read_markdown_file/presentation/b
 void main() {
   test('initial state is correct', () {
     const initialState = MarkdownToFlashcardState();
-    expect(initialState.status, GetMarkdownFileStatus.initial);
+    expect(initialState.status, GetMarkdownFilesStatus.initial);
   });
 
   test('copyWith works', () {
     const MarkdownToFlashcardState initialState = MarkdownToFlashcardState();
     final Exception exception = Exception('Test');
-    const Note note = Note(fileContents: '');
+    const List<Note> notes = [Note(fileContents: '')];
 
     final state = initialState.copyWith(
-      status: GetMarkdownFileStatus.success,
-      note: note,
+      status: GetMarkdownFilesStatus.success,
+      notes: notes,
       exception: exception,
     );
 
     expect(
       state,
       MarkdownToFlashcardState(
-        status: GetMarkdownFileStatus.success,
-        note: note,
+        status: GetMarkdownFilesStatus.success,
+        notes: notes,
         exception: exception,
       ),
     );

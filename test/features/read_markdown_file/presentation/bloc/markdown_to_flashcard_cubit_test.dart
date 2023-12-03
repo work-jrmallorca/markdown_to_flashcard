@@ -30,6 +30,10 @@ void main() {
   late MockAddFlashcardIDsToNoteUseCase mockAddIdsUseCase;
   late MarkdownToFlashcardCubit cubit;
 
+  setUpAll(() {
+    registerFallbackValue(const Note(fileContents: ''));
+  });
+
   setUp(() {
     mockNoteRepository = MockNoteRepository();
     mockConvertMarkdownToHTMLUseCase = MockConvertMarkdownToHTMLUseCase();
@@ -46,8 +50,50 @@ void main() {
   });
 
   group('getMarkdownFile()', () {
-    const Note expectedNote = emptyNote;
     final Exception exception = Exception('Failed to get Markdown file.');
+    late List<Note> expectedNotes;
+
+    setUp(() {
+      expectedNotes = [];
+    });
+
+    blocTest<MarkdownToFlashcardCubit, MarkdownToFlashcardState>(
+      'GIVEN the user successfully selects multiple Markdown files, '
+      "WHEN 'getMarkdownFile()' is called from the cubit, "
+      'THEN call all usecases, '
+      'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.success]',
+      setUp: () {
+        expectedNotes = expectedNotes
+          ..add(emptyNote)
+          ..add(emptyNote)
+          ..add(emptyNote);
+
+        when(() => mockNoteRepository.getNote())
+            .thenAnswer((_) async => expectedNotes);
+        when(() => mockConvertMarkdownToHTMLUseCase(any()))
+            .thenReturn(emptyNote);
+        when(() => mockAddUseCase(any())).thenAnswer((_) async => []);
+        when(() => mockAddIdsUseCase(any(), [])).thenReturn(emptyNote);
+        when(() => mockNoteRepository.updateNote(any()))
+            .thenAnswer((_) async {});
+      },
+      build: () => cubit,
+      act: (cubit) => cubit.getMarkdownFiles(),
+      verify: (_) async {
+        verify(() => mockNoteRepository.getNote()).called(1);
+        verify(() => mockConvertMarkdownToHTMLUseCase(any())).called(3);
+        verify(() => mockAddUseCase(any())).called(3);
+        verify(() => mockAddIdsUseCase(any(), [])).called(3);
+        verify(() => mockNoteRepository.updateNote(any())).called(3);
+      },
+      expect: () => <MarkdownToFlashcardState>[
+        const MarkdownToFlashcardState(status: GetMarkdownFilesStatus.loading),
+        MarkdownToFlashcardState(
+          status: GetMarkdownFilesStatus.success,
+          notes: expectedNotes,
+        ),
+      ],
+    );
 
     blocTest<MarkdownToFlashcardCubit, MarkdownToFlashcardState>(
       'GIVEN the user successfully selects a Markdown file, '
@@ -55,30 +101,35 @@ void main() {
       'THEN call all usecases, '
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.success]',
       setUp: () {
+        expectedNotes = expectedNotes..add(emptyNote);
+
         when(() => mockNoteRepository.getNote())
-            .thenAnswer((_) async => expectedNote);
-        when(() => mockConvertMarkdownToHTMLUseCase(expectedNote))
-            .thenReturn(expectedNote);
-        when(() => mockAddUseCase(expectedNote)).thenAnswer((_) async => []);
-        when(() => mockAddIdsUseCase(expectedNote, []))
-            .thenReturn(expectedNote);
-        when(() => mockNoteRepository.updateNote(expectedNote))
+            .thenAnswer((_) async => expectedNotes);
+        when(() => mockConvertMarkdownToHTMLUseCase(expectedNotes.first))
+            .thenReturn(expectedNotes.first);
+        when(() => mockAddUseCase(expectedNotes.first))
+            .thenAnswer((_) async => []);
+        when(() => mockAddIdsUseCase(expectedNotes.first, []))
+            .thenReturn(expectedNotes.first);
+        when(() => mockNoteRepository.updateNote(expectedNotes.first))
             .thenAnswer((_) async {});
       },
       build: () => cubit,
-      act: (cubit) => cubit.getMarkdownFile(),
+      act: (cubit) => cubit.getMarkdownFiles(),
       verify: (_) async {
         verify(() => mockNoteRepository.getNote()).called(1);
-        verify(() => mockConvertMarkdownToHTMLUseCase(expectedNote)).called(1);
-        verify(() => mockAddUseCase(expectedNote)).called(1);
-        verify(() => mockAddIdsUseCase(expectedNote, [])).called(1);
-        verify(() => mockNoteRepository.updateNote(expectedNote)).called(1);
+        verify(() => mockConvertMarkdownToHTMLUseCase(expectedNotes.first))
+            .called(1);
+        verify(() => mockAddUseCase(expectedNotes.first)).called(1);
+        verify(() => mockAddIdsUseCase(expectedNotes.first, [])).called(1);
+        verify(() => mockNoteRepository.updateNote(expectedNotes.first))
+            .called(1);
       },
       expect: () => <MarkdownToFlashcardState>[
-        const MarkdownToFlashcardState(status: GetMarkdownFileStatus.loading),
-        const MarkdownToFlashcardState(
-          status: GetMarkdownFileStatus.success,
-          note: expectedNote,
+        const MarkdownToFlashcardState(status: GetMarkdownFilesStatus.loading),
+        MarkdownToFlashcardState(
+          status: GetMarkdownFilesStatus.success,
+          notes: expectedNotes,
         ),
       ],
     );
@@ -91,12 +142,12 @@ void main() {
       setUp: () =>
           when(() => mockNoteRepository.getNote()).thenThrow(exception),
       build: () => cubit,
-      act: (cubit) => cubit.getMarkdownFile(),
+      act: (cubit) => cubit.getMarkdownFiles(),
       verify: (_) async => verify(() => mockNoteRepository.getNote()).called(1),
       expect: () => <MarkdownToFlashcardState>[
-        const MarkdownToFlashcardState(status: GetMarkdownFileStatus.loading),
+        const MarkdownToFlashcardState(status: GetMarkdownFilesStatus.loading),
         MarkdownToFlashcardState(
-          status: GetMarkdownFileStatus.failure,
+          status: GetMarkdownFilesStatus.failure,
           exception: exception,
         ),
       ],
@@ -108,21 +159,24 @@ void main() {
       'THEN throw exception when converting markdown to HTML, '
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.failure]',
       setUp: () {
+        expectedNotes = expectedNotes..add(emptyNote);
+
         when(() => mockNoteRepository.getNote())
-            .thenAnswer((_) async => expectedNote);
-        when(() => mockConvertMarkdownToHTMLUseCase(expectedNote))
+            .thenAnswer((_) async => expectedNotes);
+        when(() => mockConvertMarkdownToHTMLUseCase(expectedNotes.first))
             .thenThrow(exception);
       },
       build: () => cubit,
-      act: (cubit) => cubit.getMarkdownFile(),
+      act: (cubit) => cubit.getMarkdownFiles(),
       verify: (_) async {
         verify(() => mockNoteRepository.getNote()).called(1);
-        verify(() => mockConvertMarkdownToHTMLUseCase(expectedNote)).called(1);
+        verify(() => mockConvertMarkdownToHTMLUseCase(expectedNotes.first))
+            .called(1);
       },
       expect: () => <MarkdownToFlashcardState>[
-        const MarkdownToFlashcardState(status: GetMarkdownFileStatus.loading),
+        const MarkdownToFlashcardState(status: GetMarkdownFilesStatus.loading),
         MarkdownToFlashcardState(
-          status: GetMarkdownFileStatus.failure,
+          status: GetMarkdownFilesStatus.failure,
           exception: exception,
         ),
       ],
@@ -134,23 +188,26 @@ void main() {
       'THEN throw exception when adding note to Ankidroid, '
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.failure]',
       setUp: () {
+        expectedNotes = expectedNotes..add(emptyNote);
+
         when(() => mockNoteRepository.getNote())
-            .thenAnswer((_) async => expectedNote);
-        when(() => mockConvertMarkdownToHTMLUseCase(expectedNote))
-            .thenReturn(expectedNote);
-        when(() => mockAddUseCase(expectedNote)).thenThrow(exception);
+            .thenAnswer((_) async => expectedNotes);
+        when(() => mockConvertMarkdownToHTMLUseCase(expectedNotes.first))
+            .thenReturn(expectedNotes.first);
+        when(() => mockAddUseCase(expectedNotes.first)).thenThrow(exception);
       },
       build: () => cubit,
-      act: (cubit) => cubit.getMarkdownFile(),
+      act: (cubit) => cubit.getMarkdownFiles(),
       verify: (_) async {
         verify(() => mockNoteRepository.getNote()).called(1);
-        verify(() => mockConvertMarkdownToHTMLUseCase(expectedNote)).called(1);
-        verify(() => mockAddUseCase(expectedNote)).called(1);
+        verify(() => mockConvertMarkdownToHTMLUseCase(expectedNotes.first))
+            .called(1);
+        verify(() => mockAddUseCase(expectedNotes.first)).called(1);
       },
       expect: () => <MarkdownToFlashcardState>[
-        const MarkdownToFlashcardState(status: GetMarkdownFileStatus.loading),
+        const MarkdownToFlashcardState(status: GetMarkdownFilesStatus.loading),
         MarkdownToFlashcardState(
-          status: GetMarkdownFileStatus.failure,
+          status: GetMarkdownFilesStatus.failure,
           exception: exception,
         ),
       ],
@@ -162,25 +219,30 @@ void main() {
       'THEN throw exception when adding flashcard IDs to note, '
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.failure]',
       setUp: () {
+        expectedNotes = expectedNotes..add(emptyNote);
+
         when(() => mockNoteRepository.getNote())
-            .thenAnswer((_) async => expectedNote);
-        when(() => mockConvertMarkdownToHTMLUseCase(expectedNote))
-            .thenReturn(expectedNote);
-        when(() => mockAddUseCase(expectedNote)).thenAnswer((_) async => []);
-        when(() => mockAddIdsUseCase(expectedNote, [])).thenThrow(exception);
+            .thenAnswer((_) async => expectedNotes);
+        when(() => mockConvertMarkdownToHTMLUseCase(expectedNotes.first))
+            .thenReturn(expectedNotes.first);
+        when(() => mockAddUseCase(expectedNotes.first))
+            .thenAnswer((_) async => []);
+        when(() => mockAddIdsUseCase(expectedNotes.first, []))
+            .thenThrow(exception);
       },
       build: () => cubit,
-      act: (cubit) => cubit.getMarkdownFile(),
+      act: (cubit) => cubit.getMarkdownFiles(),
       verify: (_) async {
         verify(() => mockNoteRepository.getNote()).called(1);
-        verify(() => mockConvertMarkdownToHTMLUseCase(expectedNote)).called(1);
-        verify(() => mockAddUseCase(expectedNote)).called(1);
-        verify(() => mockAddIdsUseCase(expectedNote, [])).called(1);
+        verify(() => mockConvertMarkdownToHTMLUseCase(expectedNotes.first))
+            .called(1);
+        verify(() => mockAddUseCase(expectedNotes.first)).called(1);
+        verify(() => mockAddIdsUseCase(expectedNotes.first, [])).called(1);
       },
       expect: () => <MarkdownToFlashcardState>[
-        const MarkdownToFlashcardState(status: GetMarkdownFileStatus.loading),
+        const MarkdownToFlashcardState(status: GetMarkdownFilesStatus.loading),
         MarkdownToFlashcardState(
-          status: GetMarkdownFileStatus.failure,
+          status: GetMarkdownFilesStatus.failure,
           exception: exception,
         ),
       ],
@@ -192,29 +254,34 @@ void main() {
       'THEN throw exception when updating the file in the repository, '
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.failure]',
       setUp: () {
+        expectedNotes = expectedNotes..add(emptyNote);
+
         when(() => mockNoteRepository.getNote())
-            .thenAnswer((_) async => expectedNote);
-        when(() => mockConvertMarkdownToHTMLUseCase(expectedNote))
-            .thenReturn(expectedNote);
-        when(() => mockAddUseCase(expectedNote)).thenAnswer((_) async => []);
-        when(() => mockAddIdsUseCase(expectedNote, []))
-            .thenReturn(expectedNote);
-        when(() => mockNoteRepository.updateNote(expectedNote))
+            .thenAnswer((_) async => expectedNotes);
+        when(() => mockConvertMarkdownToHTMLUseCase(expectedNotes.first))
+            .thenReturn(expectedNotes.first);
+        when(() => mockAddUseCase(expectedNotes.first))
+            .thenAnswer((_) async => []);
+        when(() => mockAddIdsUseCase(expectedNotes.first, []))
+            .thenReturn(expectedNotes.first);
+        when(() => mockNoteRepository.updateNote(expectedNotes.first))
             .thenThrow(exception);
       },
       build: () => cubit,
-      act: (cubit) => cubit.getMarkdownFile(),
+      act: (cubit) => cubit.getMarkdownFiles(),
       verify: (_) async {
         verify(() => mockNoteRepository.getNote()).called(1);
-        verify(() => mockConvertMarkdownToHTMLUseCase(expectedNote)).called(1);
-        verify(() => mockAddUseCase(expectedNote)).called(1);
-        verify(() => mockAddIdsUseCase(expectedNote, [])).called(1);
-        verify(() => mockNoteRepository.updateNote(expectedNote)).called(1);
+        verify(() => mockConvertMarkdownToHTMLUseCase(expectedNotes.first))
+            .called(1);
+        verify(() => mockAddUseCase(expectedNotes.first)).called(1);
+        verify(() => mockAddIdsUseCase(expectedNotes.first, [])).called(1);
+        verify(() => mockNoteRepository.updateNote(expectedNotes.first))
+            .called(1);
       },
       expect: () => <MarkdownToFlashcardState>[
-        const MarkdownToFlashcardState(status: GetMarkdownFileStatus.loading),
+        const MarkdownToFlashcardState(status: GetMarkdownFilesStatus.loading),
         MarkdownToFlashcardState(
-          status: GetMarkdownFileStatus.failure,
+          status: GetMarkdownFilesStatus.failure,
           exception: exception,
         ),
       ],
@@ -226,13 +293,14 @@ void main() {
       "THEN call 'getMarkdownFile()' from the repository, "
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.cancelled]',
       setUp: () => when(() => mockNoteRepository.getNote())
-          .thenAnswer((_) async => null),
+          .thenAnswer((_) async => expectedNotes),
       build: () => cubit,
-      act: (cubit) => cubit.getMarkdownFile(),
+      act: (cubit) => cubit.getMarkdownFiles(),
       verify: (_) async => verify(() => mockNoteRepository.getNote()).called(1),
       expect: () => <MarkdownToFlashcardState>[
-        const MarkdownToFlashcardState(status: GetMarkdownFileStatus.loading),
-        const MarkdownToFlashcardState(status: GetMarkdownFileStatus.cancelled),
+        const MarkdownToFlashcardState(status: GetMarkdownFilesStatus.loading),
+        const MarkdownToFlashcardState(
+            status: GetMarkdownFilesStatus.cancelled),
       ],
     );
   });

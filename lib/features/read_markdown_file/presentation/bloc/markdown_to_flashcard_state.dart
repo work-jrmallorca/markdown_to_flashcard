@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import '../../domain/entities/note.dart';
 
-enum GetMarkdownFileStatus {
+enum GetMarkdownFilesStatus {
   initial,
   loading,
   success,
@@ -11,28 +11,28 @@ enum GetMarkdownFileStatus {
 }
 
 class MarkdownToFlashcardState extends Equatable {
-  final GetMarkdownFileStatus status;
-  final Note? note;
+  final GetMarkdownFilesStatus status;
+  final List<Note> notes;
   final Exception? exception;
 
   const MarkdownToFlashcardState({
-    this.status = GetMarkdownFileStatus.initial,
-    this.note,
+    this.status = GetMarkdownFilesStatus.initial,
+    this.notes = const [],
     this.exception,
   });
 
   MarkdownToFlashcardState copyWith({
-    GetMarkdownFileStatus? status,
-    Note? note,
+    GetMarkdownFilesStatus? status,
+    List<Note>? notes,
     Exception? exception,
   }) {
     return MarkdownToFlashcardState(
       status: status ?? this.status,
-      note: note ?? this.note,
+      notes: notes ?? this.notes,
       exception: exception ?? this.exception,
     );
   }
 
   @override
-  List<Object?> get props => [status, note, exception];
+  List<Object?> get props => [status, notes, exception];
 }
