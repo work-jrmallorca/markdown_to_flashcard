@@ -28,13 +28,13 @@ void main() {
         "WHEN 'getNote()' is called from the repository, "
         "THEN call 'getFile()' once from the local data source, "
         "AND return 'null'", () async {
-      const Note? expected = null;
-      when(() => mock.getFile()).thenAnswer((_) async => null);
+      const List<Note> expected = [];
+      when(() => mock.getFiles()).thenAnswer((_) async => []);
 
-      final Note? result = await repository.getNote();
+      final List<Note> result = await repository.getNote();
 
       expect(result, expected);
-      verify(() => mock.getFile()).called(1);
+      verify(() => mock.getFiles()).called(1);
     });
 
     test(
@@ -42,12 +42,12 @@ void main() {
         "WHEN 'getNote()' is called from the repository, "
         "THEN call 'getFile()' once from the local data source, "
         'AND throw a ConversionException', () async {
-      when(() => mock.getFile()).thenThrow(ConversionException());
+      when(() => mock.getFiles()).thenThrow(ConversionException());
 
-      final Future<Note?> Function() result = repository.getNote;
+      final Future<List<Note>> Function() result = repository.getNote;
 
       expect(() async => await result(), throwsA(isA<ConversionException>()));
-      verify(() => mock.getFile()).called(1);
+      verify(() => mock.getFiles()).called(1);
     });
 
     test(
@@ -56,13 +56,13 @@ void main() {
         "THEN call 'getMarkdownFile()' once from the repository, "
         "AND return 'Note'", () async {
       File file = deckMultipleTagsTitleMultipleQaFile;
-      Note expected = Note(fileContents: file.readAsStringSync());
-      when(() => mock.getFile()).thenAnswer((_) async => expected);
+      List<Note> expected = [Note(fileContents: file.readAsStringSync())];
+      when(() => mock.getFiles()).thenAnswer((_) async => expected);
 
-      final Note? result = await repository.getNote();
+      final List<Note> result = await repository.getNote();
 
       expect(result, expected);
-      verify(() => mock.getFile()).called(1);
+      verify(() => mock.getFiles()).called(1);
     });
   });
 
