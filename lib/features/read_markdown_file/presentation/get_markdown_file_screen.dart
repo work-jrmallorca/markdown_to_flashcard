@@ -2,9 +2,9 @@ import 'package:drop_shadow/drop_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../theme/presentation/widgets/cycle_theme_button.dart';
+import '../../tutorial/presentation/widgets/tutorial_button.dart';
 import 'bloc/markdown_to_flashcard_cubit.dart';
 import 'bloc/markdown_to_flashcard_state.dart';
 import 'widgets/exception_dialog.dart';
@@ -25,21 +25,17 @@ class GetMarkdownFileScreen extends StatelessWidget {
               context.read<MarkdownToFlashcardCubit>().getMarkdownFiles(),
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        shape: const AutomaticNotchedShape(
+      bottomNavigationBar: const BottomAppBar(
+        shape: AutomaticNotchedShape(
           RoundedRectangleBorder(),
           StadiumBorder(side: BorderSide()),
         ),
         notchMargin: 8.0,
         child: Row(
           children: <Widget>[
-            IconButton(
-              tooltip: 'Open navigation menu',
-              icon: const Icon(Icons.question_mark_rounded),
-              onPressed: () => context.go('/tutorial'),
-            ),
-            const Spacer(),
-            const CycleThemeButton(),
+            TutorialButton(),
+            Spacer(),
+            CycleThemeButton(),
           ],
         ),
       ),
@@ -103,8 +99,6 @@ class GetMarkdownFileScreen extends StatelessWidget {
 
   Widget _buildDescription(
       BuildContext context, MarkdownToFlashcardState state) {
-    Color markdownColor = Theme.of(context).colorScheme.surfaceVariant;
-
     String title;
     String description;
 
@@ -144,27 +138,32 @@ class GetMarkdownFileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 25.0),
               if (state.notes.isNotEmpty)
-                Markdown(
-                  styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
-                      .copyWith(
-                          code: TextStyle(backgroundColor: markdownColor),
-                          codeblockPadding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 20.0),
-                          codeblockDecoration: BoxDecoration(
-                              color: markdownColor,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(10)))),
-                  shrinkWrap: true,
-                  data: '''
-```
-${state.notes.map((note) => '- ${note.title}').join('\n')}
-```
-                  ''',
-                ),
+                _buildImportedFilesList(context, state),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildImportedFilesList(
+      BuildContext context, MarkdownToFlashcardState state) {
+    Color markdownColor = Theme.of(context).colorScheme.surfaceVariant;
+
+    return Markdown(
+      styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+          code: TextStyle(backgroundColor: markdownColor),
+          codeblockPadding:
+              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+          codeblockDecoration: BoxDecoration(
+              color: markdownColor,
+              borderRadius: const BorderRadius.all(Radius.circular(10)))),
+      shrinkWrap: true,
+      data: '''
+```
+${state.notes.map((note) => '- ${note.title}').join('\n')}
+```
+                ''',
     );
   }
 }
