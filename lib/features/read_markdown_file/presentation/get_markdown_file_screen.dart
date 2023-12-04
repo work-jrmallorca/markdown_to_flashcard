@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:go_router/go_router.dart';
-import 'package:markdown_to_flashcard/features/theme/presentation/widgets/cycle_theme_button.dart';
 
+import '../../theme/presentation/widgets/cycle_theme_button.dart';
 import 'bloc/markdown_to_flashcard_cubit.dart';
 import 'bloc/markdown_to_flashcard_state.dart';
+import 'widgets/exception_dialog.dart';
 
 class GetMarkdownFileScreen extends StatelessWidget {
   const GetMarkdownFileScreen({super.key});
@@ -50,9 +51,10 @@ class GetMarkdownFileScreen extends StatelessWidget {
       listener: (context, state) {
         switch (state.status) {
           case GetMarkdownFilesStatus.failure:
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${state.exception}')),
-            );
+            showDialog(
+                context: context,
+                builder: (context) =>
+                    ExceptionDialog(message: state.errorMessage!));
             break;
           case GetMarkdownFilesStatus.cancelled:
             ScaffoldMessenger.of(context).showSnackBar(
@@ -138,6 +140,7 @@ class GetMarkdownFileScreen extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 18.0,
                 ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 25.0),
               if (state.notes.isNotEmpty)

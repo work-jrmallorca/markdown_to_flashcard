@@ -148,7 +148,7 @@ void main() {
         const MarkdownToFlashcardState(status: GetMarkdownFilesStatus.loading),
         MarkdownToFlashcardState(
           status: GetMarkdownFilesStatus.failure,
-          exception: exception,
+          errorMessage: exception.toString(),
         ),
       ],
     );
@@ -177,7 +177,7 @@ void main() {
         const MarkdownToFlashcardState(status: GetMarkdownFilesStatus.loading),
         MarkdownToFlashcardState(
           status: GetMarkdownFilesStatus.failure,
-          exception: exception,
+          errorMessage: exception.toString(),
         ),
       ],
     );
@@ -208,7 +208,7 @@ void main() {
         const MarkdownToFlashcardState(status: GetMarkdownFilesStatus.loading),
         MarkdownToFlashcardState(
           status: GetMarkdownFilesStatus.failure,
-          exception: exception,
+          errorMessage: exception.toString(),
         ),
       ],
     );
@@ -243,7 +243,7 @@ void main() {
         const MarkdownToFlashcardState(status: GetMarkdownFilesStatus.loading),
         MarkdownToFlashcardState(
           status: GetMarkdownFilesStatus.failure,
-          exception: exception,
+          errorMessage: exception.toString(),
         ),
       ],
     );
@@ -282,7 +282,7 @@ void main() {
         const MarkdownToFlashcardState(status: GetMarkdownFilesStatus.loading),
         MarkdownToFlashcardState(
           status: GetMarkdownFilesStatus.failure,
-          exception: exception,
+          errorMessage: exception.toString(),
         ),
       ],
     );

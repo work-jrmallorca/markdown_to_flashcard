@@ -13,26 +13,26 @@ enum GetMarkdownFilesStatus {
 class MarkdownToFlashcardState extends Equatable {
   final GetMarkdownFilesStatus status;
   final List<Note> notes;
-  final Exception? exception;
+  final String? errorMessage;
 
   const MarkdownToFlashcardState({
     this.status = GetMarkdownFilesStatus.initial,
     this.notes = const [],
-    this.exception,
+    this.errorMessage,
   });
 
   MarkdownToFlashcardState copyWith({
     GetMarkdownFilesStatus? status,
     List<Note>? notes,
-    Exception? exception,
+    String? errorMessage,
   }) {
     return MarkdownToFlashcardState(
       status: status ?? this.status,
       notes: notes ?? this.notes,
-      exception: exception ?? this.exception,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [status, notes, exception];
+  List<Object?> get props => [status, notes, errorMessage];
 }

@@ -17,8 +17,9 @@ class Note extends Equatable {
 
     return regex.firstMatch(fileContents)?.group(1) ??
         (throw ConversionException(
-          message:
-              'Unable to detect title in the file. Please include or format title into "# <some_title_name>"',
+          message: '''
+We couldn't detect a title. Please check the file is formatted correctly.
+        ''',
         ));
   }
 
@@ -27,8 +28,11 @@ class Note extends Equatable {
 
     return regex.firstMatch(fileContents)?.group(1) ??
         (throw ConversionException(
-          message:
-              'Unable to detect deck in the file. Please include or format deck into "deck: <some_deck_name>"',
+          message: '''
+We couldn't detect a deck. Please check the file is formatted correctly:
+
+$title
+        ''',
         ));
   }
 
@@ -43,8 +47,11 @@ class Note extends Equatable {
       return regexResult.isEmpty ? [] : trimmedTags;
     } else {
       throw ConversionException(
-        message:
-            'Unable to detect tags in the file. Please format tags into a comma-separated list "tags: <first_tag>, <second_tag> ... <last_tag>"',
+        message: '''
+We couldn't detect any tags. Please check the file is formatted correctly:
+
+$title
+        ''',
       );
     }
   }
@@ -58,8 +65,11 @@ class Note extends Equatable {
             .map((match) => _getQuestionAnswerPair(match.group(0)!))
             .toList()
         : throw ConversionException(
-            message:
-                'Unable to detect any question-answer pairs in the file. Please format question-answer pairs into "Question :: Answer"',
+            message: '''
+We couldn't detect any question-answer pairs. Please check the file is formatted correctly:
+
+$title
+        ''',
           );
   }
 
