@@ -1,6 +1,7 @@
 import 'package:drop_shadow/drop_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:go_router/go_router.dart';
 import 'package:markdown_to_flashcard/features/theme/presentation/widgets/cycle_theme_button.dart';
 
@@ -18,9 +19,9 @@ class GetMarkdownFileScreen extends StatelessWidget {
       floatingActionButton: ClipRRect(
         borderRadius: BorderRadius.circular(32),
         child: FloatingActionButton.extended(
-          label: const Text('Select a Markdown File'),
+          label: const Text('Select Markdown Files'),
           onPressed: () =>
-              context.read<MarkdownToFlashcardCubit>().getMarkdownFile(),
+              context.read<MarkdownToFlashcardCubit>().getMarkdownFiles(),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
@@ -48,12 +49,12 @@ class GetMarkdownFileScreen extends StatelessWidget {
     return BlocConsumer<MarkdownToFlashcardCubit, MarkdownToFlashcardState>(
       listener: (context, state) {
         switch (state.status) {
-          case GetMarkdownFileStatus.failure:
+          case GetMarkdownFilesStatus.failure:
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('${state.exception}')),
             );
             break;
-          case GetMarkdownFileStatus.cancelled:
+          case GetMarkdownFilesStatus.cancelled:
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('File selection cancelled')),
             );
@@ -62,7 +63,7 @@ class GetMarkdownFileScreen extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        return state.status == GetMarkdownFileStatus.loading
+        return state.status == GetMarkdownFilesStatus.loading
             ? const Center(child: CircularProgressIndicator())
             : Column(
                 children: [
@@ -76,7 +77,7 @@ class GetMarkdownFileScreen extends StatelessWidget {
 
   Widget _buildImage(BuildContext context, MarkdownToFlashcardState state) {
     switch (state.status) {
-      case GetMarkdownFileStatus.success:
+      case GetMarkdownFilesStatus.success:
         return const Center(
           child: Icon(
             Icons.check_circle_outline_rounded,
@@ -100,17 +101,18 @@ class GetMarkdownFileScreen extends StatelessWidget {
 
   Widget _buildDescription(
       BuildContext context, MarkdownToFlashcardState state) {
+    Color markdownColor = Theme.of(context).colorScheme.surfaceVariant;
+
     String title;
     String description;
 
     switch (state.status) {
-      case GetMarkdownFileStatus.loading:
+      case GetMarkdownFilesStatus.loading:
         title = '';
         description = '';
-      case GetMarkdownFileStatus.success:
+      case GetMarkdownFilesStatus.success:
         title = 'Success!';
-        description =
-            'Successfully imported note "${state.note!.title}". Import another?';
+        description = 'Imported the following:';
       default:
         title = 'Import to Anki';
         description =
@@ -129,12 +131,34 @@ class GetMarkdownFileScreen extends StatelessWidget {
         const SizedBox(height: 25.0),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25.0),
-          child: Text(
-            description,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 18.0,
-            ),
+          child: Column(
+            children: [
+              Text(
+                description,
+                style: const TextStyle(
+                  fontSize: 18.0,
+                ),
+              ),
+              const SizedBox(height: 25.0),
+              if (state.notes.isNotEmpty)
+                Markdown(
+                  styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                      .copyWith(
+                          code: TextStyle(backgroundColor: markdownColor),
+                          codeblockPadding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 20.0),
+                          codeblockDecoration: BoxDecoration(
+                              color: markdownColor,
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10)))),
+                  shrinkWrap: true,
+                  data: '''
+```
+${state.notes.map((note) => '- ${note.title}').join('\n')}
+```
+                  ''',
+                ),
+            ],
           ),
         ),
       ],

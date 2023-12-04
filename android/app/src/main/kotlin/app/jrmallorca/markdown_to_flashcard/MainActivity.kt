@@ -1,6 +1,7 @@
 package app.jrmallorca.markdown_to_flashcard
 
 import android.app.Activity
+import android.content.ClipData
 import android.content.Intent
 import android.net.Uri
 import androidx.core.net.toUri
@@ -16,7 +17,7 @@ import java.io.InputStreamReader
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "app.jrmallorca.markdown_to_flashcard/ankidroid"
-    private val GET_MARKDOWN_FILE = 2
+    private val GET_MARKDOWN_FILES = 2
 
     private var pendingResult: MethodChannel.Result? = null
 
@@ -31,7 +32,7 @@ class MainActivity : FlutterActivity() {
         ).setMethodCallHandler { call, result ->
             pendingResult = result
             when (call.method) {
-                "pickFile" -> pickFileFromFilePicker()
+                "pickFiles" -> pickFilesFromFilePicker()
                 "requestPermissions" -> requestPermissions()
                 "addAnkiFlashcard" -> addAnkiFlashcard(call)
                 "addAnkiFlashcards" -> addAnkiFlashcards(call)
@@ -45,27 +46,45 @@ class MainActivity : FlutterActivity() {
     override fun onActivityResult(
         requestCode: Int, resultCode: Int, resultData: Intent?
     ) {
-        if (resultCode == Activity.RESULT_OK && requestCode == GET_MARKDOWN_FILE) {
-            readFile(resultData)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                GET_MARKDOWN_FILES -> readFile(resultData)
+            }
         } else {
             pendingResult!!.success(null)
         }
     }
 
-    private fun pickFileFromFilePicker() {
+    private fun pickFilesFromFilePicker() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             type = "text/markdown"
         }
 
-        startActivityForResult(intent, GET_MARKDOWN_FILE)
+        startActivityForResult(intent, GET_MARKDOWN_FILES)
     }
 
     private fun readFile(resultData: Intent?) {
-        resultData?.data?.also { uri ->
+        val selectedMultipleUris: ClipData? = resultData?.clipData
+        val selectedUri: Uri? = resultData?.data
+        val result: MutableList<Map<String, String>> = mutableListOf()
+
+        if (selectedMultipleUris != null) {
+            for (i in 0 until selectedMultipleUris.itemCount) {
+                result += createMapOfFile(selectedMultipleUris.getItemAt(i)?.uri!!)
+            }
+        }
+        else if (selectedUri != null) result += createMapOfFile(selectedUri)
+
+        return pendingResult!!.success(result)
+    }
+
+    private fun createMapOfFile(uri: Uri): Map<String, String> {
+        uri.also { u ->
             val stringBuilder = StringBuilder()
 
-            contentResolver.openInputStream(uri)?.use { inputStream ->
+            contentResolver.openInputStream(u)?.use { inputStream ->
                 BufferedReader(InputStreamReader(inputStream)).use { reader ->
                     var line: String? = reader.readLine()
                     while (line != null) {
@@ -76,11 +95,10 @@ class MainActivity : FlutterActivity() {
                 }
             }
 
-            return pendingResult!!.success(
-                mapOf(
-                    "uri" to uri.toString(), "fileContents" to stringBuilder.toString()
+            return mapOf(
+                    "uri" to u.toString(),
+                    "fileContents" to stringBuilder.toString()
                 )
-            )
         }
     }
 
