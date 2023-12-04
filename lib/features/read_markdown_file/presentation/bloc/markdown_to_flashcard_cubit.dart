@@ -25,9 +25,9 @@ class MarkdownToFlashcardCubit extends Cubit<MarkdownToFlashcardState> {
     emit(state.copyWith(status: GetMarkdownFilesStatus.loading));
 
     try {
-      List<Note> markdownNotes = await noteRepository.getNote();
+      List<Note>? markdownNotes = await noteRepository.getNote();
 
-      if (markdownNotes.isNotEmpty) {
+      if (markdownNotes != null && markdownNotes.isNotEmpty) {
         for (var markdownNote in markdownNotes) {
           Note htmlNote = convertMarkdownToHTML(markdownNote);
           List<int> ids =

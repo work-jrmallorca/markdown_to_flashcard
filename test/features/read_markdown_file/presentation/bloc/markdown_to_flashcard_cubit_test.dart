@@ -293,7 +293,7 @@ void main() {
       "THEN call 'getMarkdownFile()' from the repository, "
       'AND emit [GetMarkdownFileStatus.loading, GetMarkdownFileStatus.cancelled]',
       setUp: () => when(() => mockNoteRepository.getNote())
-          .thenAnswer((_) async => expectedNotes),
+          .thenAnswer((_) async => null),
       build: () => cubit,
       act: (cubit) => cubit.getMarkdownFiles(),
       verify: (_) async => verify(() => mockNoteRepository.getNote()).called(1),

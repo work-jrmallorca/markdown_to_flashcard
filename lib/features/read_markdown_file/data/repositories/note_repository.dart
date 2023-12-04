@@ -6,7 +6,7 @@ class NoteRepository {
 
   NoteRepository({required this.localDataSource});
 
-  Future<List<Note>> getNote() async => await localDataSource.getFiles();
+  Future<List<Note>?> getNote() async => await localDataSource.getFiles();
 
   Future<void> updateNote(Note note) async =>
       await localDataSource.updateFile(note);

@@ -28,10 +28,10 @@ void main() {
         "WHEN 'getNote()' is called from the repository, "
         "THEN call 'getFile()' once from the local data source, "
         "AND return 'null'", () async {
-      const List<Note> expected = [];
-      when(() => mock.getFiles()).thenAnswer((_) async => []);
+      const List<Note>? expected = null;
+      when(() => mock.getFiles()).thenAnswer((_) async => null);
 
-      final List<Note> result = await repository.getNote();
+      final List<Note>? result = await repository.getNote();
 
       expect(result, expected);
       verify(() => mock.getFiles()).called(1);
@@ -44,7 +44,7 @@ void main() {
         'AND throw a ConversionException', () async {
       when(() => mock.getFiles()).thenThrow(ConversionException());
 
-      final Future<List<Note>> Function() result = repository.getNote;
+      final Future<List<Note>?> Function() result = repository.getNote;
 
       expect(() async => await result(), throwsA(isA<ConversionException>()));
       verify(() => mock.getFiles()).called(1);
@@ -59,7 +59,7 @@ void main() {
       List<Note> expected = [Note(fileContents: file.readAsStringSync())];
       when(() => mock.getFiles()).thenAnswer((_) async => expected);
 
-      final List<Note> result = await repository.getNote();
+      final List<Note>? result = await repository.getNote();
 
       expect(result, expected);
       verify(() => mock.getFiles()).called(1);

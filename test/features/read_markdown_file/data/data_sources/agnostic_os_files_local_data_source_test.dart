@@ -37,7 +37,7 @@ void main() {
 
       when(() => mock()).thenAnswer((_) async => filePickerResult);
 
-      final List<Note> result = await localDataSource.getFiles();
+      final List<Note>? result = await localDataSource.getFiles();
 
       verify(() => mock()).called(1);
       expect(result, expected);
@@ -65,7 +65,7 @@ void main() {
 
       when(() => mock()).thenAnswer((_) async => filePickerResult);
 
-      final List<Note> result = await localDataSource.getFiles();
+      final List<Note>? result = await localDataSource.getFiles();
 
       verify(() => mock()).called(1);
       expect(result, expected);
@@ -75,10 +75,10 @@ void main() {
         'GIVEN the file picker is cancelled, '
         "WHEN 'call()' is called from the pick files proxy, "
         "THEN return 'FilePickerResult'", () async {
-      const List<Note> expected = [];
+      const List<Note>? expected = null;
       when(() => mock()).thenAnswer((_) async => null);
 
-      final List<Note> result = await localDataSource.getFiles();
+      final List<Note>? result = await localDataSource.getFiles();
 
       verify(() => mock()).called(1);
       expect(result, expected);

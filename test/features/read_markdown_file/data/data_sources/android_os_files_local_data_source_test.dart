@@ -39,7 +39,7 @@ void main() {
       when(() => mock.invokeMethod<List>(methodName))
           .thenAnswer((_) async => files);
 
-      final List<Note> result = await localDataSource.getFiles();
+      final List<Note>? result = await localDataSource.getFiles();
 
       verify(() => mock.invokeMethod<List>(methodName)).called(1);
       expect(result, expected);
@@ -70,7 +70,7 @@ void main() {
       when(() => mock.invokeMethod<List>(methodName))
           .thenAnswer((_) async => files);
 
-      final List<Note> result = await localDataSource.getFiles();
+      final List<Note>? result = await localDataSource.getFiles();
 
       verify(() => mock.invokeMethod<List>(methodName)).called(1);
       expect(result, expected);
@@ -80,11 +80,11 @@ void main() {
         'GIVEN the file picker is cancelled, '
         "WHEN 'getFiles()' is called, "
         'THEN return list of notes', () async {
-      const List<Note> expected = [];
+      const List<Note>? expected = null;
       when(() => mock.invokeMethod<List>(methodName))
-          .thenAnswer((_) async => []);
+          .thenAnswer((_) async => expected);
 
-      final List<Note> result = await localDataSource.getFiles();
+      final List<Note>? result = await localDataSource.getFiles();
 
       verify(() => mock.invokeMethod<List>(methodName)).called(1);
       expect(result, expected);

@@ -21,7 +21,7 @@ class AgnosticOSFilesLocalDataSource implements MarkdownFilesLocalDataSource {
   AgnosticOSFilesLocalDataSource({required this.pickFilesProxy});
 
   @override
-  Future<List<Note>> getFiles() async {
+  Future<List<Note>?> getFiles() async {
     FilePickerResult? platformFiles = await pickFilesProxy();
     List<Note> notes = [];
 
@@ -29,9 +29,10 @@ class AgnosticOSFilesLocalDataSource implements MarkdownFilesLocalDataSource {
       for (PlatformFile file in platformFiles.files) {
         notes.add(Note(fileContents: utf8.decode(file.bytes!)));
       }
+      return notes;
+    } else {
+      return null;
     }
-
-    return notes;
   }
 
   @override
