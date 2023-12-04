@@ -18,11 +18,7 @@ class Note extends Equatable {
     return regex.firstMatch(fileContents)?.group(1) ??
         (throw ConversionException(
           message: '''
-Unable to detect title in the file.
-
-Please include or format title into "# <some_title_name>".
-
-Alternatively, check the tutorial for further detail by pressing the '?' icon at the bottom-left of the screen.
+We couldn't detect a title. Please check the file is formatted correctly.
         ''',
         ));
   }
@@ -33,11 +29,9 @@ Alternatively, check the tutorial for further detail by pressing the '?' icon at
     return regex.firstMatch(fileContents)?.group(1) ??
         (throw ConversionException(
           message: '''
-Unable to detect deck in the file.
+We couldn't detect a deck. Please check the file is formatted correctly:
 
-Please include or format deck into "deck: <some_deck_name>".
-
-Alternatively, check the tutorial for further detail by pressing the '?' icon at the bottom-left of the screen.
+$title
         ''',
         ));
   }
@@ -54,11 +48,9 @@ Alternatively, check the tutorial for further detail by pressing the '?' icon at
     } else {
       throw ConversionException(
         message: '''
-Unable to detect tags in the file.
+We couldn't detect any tags. Please check the file is formatted correctly:
 
-Please format tags into a comma-separated list "tags: <first_tag>, <second_tag> ... <last_tag>".
-
-Alternatively, check the tutorial for further detail by pressing the '?' icon at the bottom-left of the screen.
+$title
         ''',
       );
     }
@@ -74,11 +66,9 @@ Alternatively, check the tutorial for further detail by pressing the '?' icon at
             .toList()
         : throw ConversionException(
             message: '''
-Unable to detect any question-answer pairs in the file.
+We couldn't detect any question-answer pairs. Please check the file is formatted correctly:
 
-Please format question-answer pairs into "Question :: Answer".
-
-Alternatively, check the tutorial for further detail by pressing the '?' icon at the bottom-left of the screen.
+$title
         ''',
           );
   }
