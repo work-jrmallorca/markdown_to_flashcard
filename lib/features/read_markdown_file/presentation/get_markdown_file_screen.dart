@@ -140,6 +140,7 @@ class GetMarkdownFileScreen extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 18.0,
                 ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 25.0),
               if (state.notes.isNotEmpty)
