@@ -13,7 +13,7 @@ class AndroidOSFilesLocalDataSource implements MarkdownFilesLocalDataSource {
     List? result = await methodChannel.invokeMethod('pickFiles');
     if (result != null) {
       List<Map<String, String>> files =
-          result!.map((file) => Map<String, String>.from(file)).toList();
+          result.map((file) => Map<String, String>.from(file)).toList();
       List<Note> notes = [];
 
       for (Map<String, String> file in files) {

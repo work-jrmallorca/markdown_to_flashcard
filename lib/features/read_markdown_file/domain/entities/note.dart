@@ -17,8 +17,13 @@ class Note extends Equatable {
 
     return regex.firstMatch(fileContents)?.group(1) ??
         (throw ConversionException(
-          message:
-              'Unable to detect title in the file. Please include or format title into "# <some_title_name>"',
+          message: '''
+Unable to detect title in the file.
+
+Please include or format title into "# <some_title_name>".
+
+Alternatively, check the tutorial for further detail by pressing the '?' icon at the bottom-left of the screen.
+        ''',
         ));
   }
 
@@ -27,8 +32,13 @@ class Note extends Equatable {
 
     return regex.firstMatch(fileContents)?.group(1) ??
         (throw ConversionException(
-          message:
-              'Unable to detect deck in the file. Please include or format deck into "deck: <some_deck_name>"',
+          message: '''
+Unable to detect deck in the file.
+
+Please include or format deck into "deck: <some_deck_name>".
+
+Alternatively, check the tutorial for further detail by pressing the '?' icon at the bottom-left of the screen.
+        ''',
         ));
   }
 
@@ -43,8 +53,13 @@ class Note extends Equatable {
       return regexResult.isEmpty ? [] : trimmedTags;
     } else {
       throw ConversionException(
-        message:
-            'Unable to detect tags in the file. Please format tags into a comma-separated list "tags: <first_tag>, <second_tag> ... <last_tag>"',
+        message: '''
+Unable to detect tags in the file.
+
+Please format tags into a comma-separated list "tags: <first_tag>, <second_tag> ... <last_tag>".
+
+Alternatively, check the tutorial for further detail by pressing the '?' icon at the bottom-left of the screen.
+        ''',
       );
     }
   }
@@ -58,8 +73,13 @@ class Note extends Equatable {
             .map((match) => _getQuestionAnswerPair(match.group(0)!))
             .toList()
         : throw ConversionException(
-            message:
-                'Unable to detect any question-answer pairs in the file. Please format question-answer pairs into "Question :: Answer"',
+            message: '''
+Unable to detect any question-answer pairs in the file.
+
+Please format question-answer pairs into "Question :: Answer".
+
+Alternatively, check the tutorial for further detail by pressing the '?' icon at the bottom-left of the screen.
+        ''',
           );
   }
 

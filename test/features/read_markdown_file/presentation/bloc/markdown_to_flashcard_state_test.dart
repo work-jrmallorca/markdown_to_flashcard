@@ -10,21 +10,21 @@ void main() {
 
   test('copyWith works', () {
     const MarkdownToFlashcardState initialState = MarkdownToFlashcardState();
-    final Exception exception = Exception('Test');
+    const String errorMessage = 'Test';
     const List<Note> notes = [Note(fileContents: '')];
 
     final state = initialState.copyWith(
       status: GetMarkdownFilesStatus.success,
       notes: notes,
-      exception: exception,
+      errorMessage: errorMessage,
     );
 
     expect(
       state,
-      MarkdownToFlashcardState(
+      const MarkdownToFlashcardState(
         status: GetMarkdownFilesStatus.success,
         notes: notes,
-        exception: exception,
+        errorMessage: errorMessage,
       ),
     );
   });

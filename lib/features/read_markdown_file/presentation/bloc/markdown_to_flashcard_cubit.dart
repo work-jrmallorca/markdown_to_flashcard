@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:markdown_to_flashcard/core/errors/exception.dart';
 import 'package:markdown_to_flashcard/features/read_markdown_file/domain/use_cases/add_flashcard_ids_to_note_use_case.dart';
 
 import '../../data/repositories/note_repository.dart';
@@ -45,11 +46,18 @@ class MarkdownToFlashcardCubit extends Cubit<MarkdownToFlashcardState> {
       } else {
         emit(state.copyWith(status: GetMarkdownFilesStatus.cancelled));
       }
+    } on ConversionException catch (exception) {
+      emit(
+        state.copyWith(
+          status: GetMarkdownFilesStatus.failure,
+          errorMessage: exception.message,
+        ),
+      );
     } on Exception catch (exception) {
       emit(
         state.copyWith(
           status: GetMarkdownFilesStatus.failure,
-          exception: exception,
+          errorMessage: exception.toString(),
         ),
       );
     }
