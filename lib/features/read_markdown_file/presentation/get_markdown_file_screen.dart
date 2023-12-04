@@ -1,6 +1,7 @@
 import 'package:drop_shadow/drop_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:go_router/go_router.dart';
 import 'package:markdown_to_flashcard/features/theme/presentation/widgets/cycle_theme_button.dart';
 
@@ -109,9 +110,7 @@ class GetMarkdownFileScreen extends StatelessWidget {
         description = '';
       case GetMarkdownFilesStatus.success:
         title = 'Success!';
-        description = state.notes.length > 1
-            ? 'Successfully imported multiple notes. Import more?'
-            : 'Successfully imported note "${state.notes.first.title}". Import another?';
+        description = 'Successfully imported the following notes. Import more?';
       default:
         title = 'Import to Anki';
         description =
@@ -130,12 +129,26 @@ class GetMarkdownFileScreen extends StatelessWidget {
         const SizedBox(height: 25.0),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25.0),
-          child: Text(
-            description,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 18.0,
-            ),
+          child: Column(
+            children: [
+              Text(
+                description,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 18.0,
+                ),
+              ),
+              const SizedBox(height: 25.0),
+              if (state.notes.isNotEmpty)
+                Markdown(
+                  softLineBreak: true,
+                  data: '''
+```
+                ${state.notes.map((note) => note.title).join(',\n')}
+                ```
+                            ''',
+                ),
+            ],
           ),
         ),
       ],
