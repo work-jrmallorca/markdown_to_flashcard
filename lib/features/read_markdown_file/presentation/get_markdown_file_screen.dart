@@ -19,7 +19,7 @@ class GetMarkdownFileScreen extends StatelessWidget {
       floatingActionButton: ClipRRect(
         borderRadius: BorderRadius.circular(32),
         child: FloatingActionButton.extended(
-          label: const Text('Select a Markdown File'),
+          label: const Text('Select Markdown Files'),
           onPressed: () =>
               context.read<MarkdownToFlashcardCubit>().getMarkdownFiles(),
         ),
@@ -101,6 +101,8 @@ class GetMarkdownFileScreen extends StatelessWidget {
 
   Widget _buildDescription(
       BuildContext context, MarkdownToFlashcardState state) {
+    Color markdownColor = Theme.of(context).colorScheme.surfaceVariant;
+
     String title;
     String description;
 
@@ -110,7 +112,7 @@ class GetMarkdownFileScreen extends StatelessWidget {
         description = '';
       case GetMarkdownFilesStatus.success:
         title = 'Success!';
-        description = 'Successfully imported the following notes. Import more?';
+        description = 'Imported the following:';
       default:
         title = 'Import to Anki';
         description =
@@ -133,7 +135,6 @@ class GetMarkdownFileScreen extends StatelessWidget {
             children: [
               Text(
                 description,
-                textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 18.0,
                 ),
@@ -141,12 +142,21 @@ class GetMarkdownFileScreen extends StatelessWidget {
               const SizedBox(height: 25.0),
               if (state.notes.isNotEmpty)
                 Markdown(
-                  softLineBreak: true,
+                  styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                      .copyWith(
+                          code: TextStyle(backgroundColor: markdownColor),
+                          codeblockPadding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 20.0),
+                          codeblockDecoration: BoxDecoration(
+                              color: markdownColor,
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10)))),
+                  shrinkWrap: true,
                   data: '''
 ```
-                ${state.notes.map((note) => note.title).join(',\n')}
-                ```
-                            ''',
+${state.notes.map((note) => '- ${note.title}').join('\n')}
+```
+                  ''',
                 ),
             ],
           ),
