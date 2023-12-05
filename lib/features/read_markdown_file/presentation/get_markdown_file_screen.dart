@@ -20,7 +20,7 @@ class GetMarkdownFileScreen extends StatelessWidget {
       floatingActionButton: ClipRRect(
         borderRadius: BorderRadius.circular(32),
         child: FloatingActionButton.extended(
-          label: const Text('Select Markdown Files'),
+          label: const Text('Select Files'),
           onPressed: () =>
               context.read<MarkdownToFlashcardCubit>().getMarkdownFiles(),
         ),
